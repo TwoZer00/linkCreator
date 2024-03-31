@@ -121,15 +121,19 @@ export const getUserFromUsername = async (username) => {
         return { ...querySnapshot.docs[0].data(), id: querySnapshot.docs[0].id };
     }
 }
-
 export const setLinkClickCounter = async (id) => {
-    const linkRef = doc(db, `user/${auth.currentUser.uid}/link`, id);
+    const visitCollection = collection(db, `user/${auth.currentUser.uid}/link/${id}/visit`);
+    const visitRef = doc(visitCollection);
     const { location, ip } = await getLocationFromIp();
-    // console.log(location); //  	ISO ALPHA-2 Country Code.
-    await updateDoc(linkRef, { visit: arrayUnion({ country: location, ip, creationTime: Timestamp.fromDate(new Date()) }) });
+    await setDoc(visitRef, { country: location, ip, creationTime: Timestamp.fromDate(new Date()), linkId: id })
 }
 export const getLocationFromIp = async () => {
     const ipResponse = await (await fetch("https://api.iplocation.net/?cmd=get-ip")).json();
     const location = await (await fetch(`https://api.iplocation.net/?cmd=ip-country&ip=${ipResponse.ip}`)).json();
     return { location: location.country_code2, ip: ipResponse.ip };
+}
+export const getVisitsOfLink = async (link) => {
+    const visitCollection = collection(db, `user/${auth.currentUser.uid}/link/${link}/visit`);
+    const querySnapshot = await getDocs(visitCollection);
+    return { id: link, visits: [...querySnapshot.docs.map((doc) => doc.data())] };
 }

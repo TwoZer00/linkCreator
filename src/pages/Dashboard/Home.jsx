@@ -1,6 +1,6 @@
 import { Box, CssBaseline, List, ListItem, ListItemText, ListSubheader, Paper, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { getUserLinks } from '../../firebase/utils';
+import { getUserLinks, getVisitsOfLink } from '../../firebase/utils';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -9,7 +9,7 @@ dayjs.extend(isSameOrBefore);
 
 export function Home() {
     const [links, setLinks] = useState([])
-    const [visits, setVisits] = useState(0);
+    const [visits, setVisits] = useState({});
     const [countries, setCountries] = useState([]);
     useEffect(() => {
         const fetchLinksData = async () => {
@@ -18,13 +18,19 @@ export function Home() {
                 return dayjs.unix(b.creationTime.seconds).subtract(dayjs.unix(a.creationTime.seconds));
             });
             let tempCounter = 0;
+            const arrProm = []
             data.forEach((link) => {
-                tempCounter += (link.visit?.length || 0);
+                arrProm.push(getVisitsOfLink(link.id))
+            })
+            const visits = await Promise.all(arrProm);
+            const tempA = {}
+            visits.forEach(({ id, visits }) => {
+                tempCounter += (visits.length || 0);
+                tempA[id] = visits;
             })
             const tempCountiesCounter = {}
             data.filter((link) => {
-                const visits = link.visit;
-                // console.log(visits.filter((visit) => dayjs.unix(visit.creationTime.seconds).isSameOrAfter(dayjs(new Date()).subtract(1, 'month'))));
+                const visits = tempA[link.id];
                 visits.filter((visit) => dayjs.unix(visit.creationTime.seconds).isSameOrAfter(dayjs().startOf('month'))).forEach((visit) => {
                     if (tempCountiesCounter[visit.country]) {
                         tempCountiesCounter[visit.country]++;
@@ -35,7 +41,7 @@ export function Home() {
             })
             setCountries(Object.entries(tempCountiesCounter));
             setLinks(data);
-            setVisits(tempCounter);
+            setVisits({ visits: { ...tempA }, total: tempCounter });
         }
         if (links.length === 0) {
             fetchLinksData();
@@ -52,7 +58,7 @@ export function Home() {
                     </Box>
                     <Box textAlign={"center"}>
                         <Typography variant="h2" fontSize={22}>Visits</Typography>
-                        <Typography variant="body1" fontSize={16}>{visits}</Typography>
+                        <Typography variant="body1" fontSize={16}>{visits.total}</Typography>
                     </Box>
                 </Stack>
                 <Stack component={Paper} variant='outlined'>
@@ -64,7 +70,7 @@ export function Home() {
                             return (
                                 <ListItem key={link.id}>
                                     <ListItemText primary={link.name} secondary={link.link} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{ maxWidth: "22ch", noWrap: true }} />
-                                    <ListItemText primary={link.visit?.length || 0} sx={{ flexGrow: 0 }} primaryTypographyProps={{ width: "fit-content" }} />
+                                    <ListItemText primary={visits.visits[link.id]?.length || 0} sx={{ flexGrow: 0 }} primaryTypographyProps={{ width: "fit-content" }} />
                                 </ListItem>
                             )
                         })}
