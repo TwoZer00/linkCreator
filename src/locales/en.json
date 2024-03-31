@@ -1,0 +1,6 @@
+{
+    "auth/email-already-in-use": "email already in use",
+    "auth-custom/username-already-in-use": "username already in use",
+    "auth-custom/user-not-found": "user not founded",
+    "auth/weak-password": "weak password"
+}

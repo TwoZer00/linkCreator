@@ -1,0 +1,6 @@
+{
+    "auth/email-already-in-use": "correo electronico en uso",
+    "auth-custom/username-already-in-use": "nombre de usuario en uso",
+    "auth-custom/user-not-found": "usuario no encontrado, favor de entrar a su perfil y completar su registro",
+    "auth/weak-password": "contraseña debil"
+}
