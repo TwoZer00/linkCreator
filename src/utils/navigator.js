@@ -1,0 +1,1 @@
+export const navigatorLang = (window.navigator.language.split('-')[0] === 'es' || window.navigator.language.split('-')[0] === 'en') ? window.navigator.language.split('-')[0] : 'en';
