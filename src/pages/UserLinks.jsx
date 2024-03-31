@@ -23,7 +23,7 @@ export default function UserLinks() {
                     <Avatar src={"/img.jpg"} alt={user.username} sx={{ width: 70, height: "auto", aspectRatio: 1 }} />
                     <Typography variant="h1" fontSize={45}>{user.username}</Typography>
                 </Stack>
-                <Stack height={"100%"} width={"100%"} square sx={{ overflowY: "auto" }} alignItems={"center"} gap={1} p={1}>
+                <Stack height={"100%"} width={"100%"} sx={{ overflowY: "auto" }} alignItems={"center"} gap={1} p={1}>
                     {user.links.length > 0 ? user.links?.map((link) => {
                         return (<Box key={link.id} width={"100%"} p={1} component={Paper} variant='outlined' square onClick={() => { handleClick(link) }}>
                             <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
