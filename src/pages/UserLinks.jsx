@@ -16,7 +16,7 @@ export default function UserLinks() {
         }
     }
     return (
-        <Box height={"100vh"} width={"100vw"} >
+        <Box height={"100dvh"} width={"100vw"} >
             <CssBaseline />
             <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} height={"100%"} gap={1} p={1}>
                 <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} py={2} gap={1} flex={0} >

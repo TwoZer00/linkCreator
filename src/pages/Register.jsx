@@ -54,7 +54,7 @@ export default function Register() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Stack component={"form"} gap={2} onSubmit={handleSubmit} height={"100vh"} width={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
+            <Stack component={"form"} gap={2} onSubmit={handleSubmit} height={"100dvh"} width={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"}>
                     <Typography variant="h1" fontSize={45}>Register</Typography>
                     <Typography variant="caption">Create your account</Typography>

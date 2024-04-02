@@ -21,7 +21,7 @@ export default function Dashboard() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Stack sx={{ flexGrow: 2, height: "100vh" }}>
+            <Stack sx={{ flexGrow: 2, height: "100dvh" }}>
                 <Outlet />
                 <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3} >
                     <BottomNavigation

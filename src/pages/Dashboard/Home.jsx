@@ -50,7 +50,7 @@ export function Home() {
     return (
         <>
             <CssBaseline />
-            <Stack width={"100%"} height={"100vh"} p={1} gap={2}>
+            <Stack width={"100%"} height={"100dvh"} p={1} gap={2}>
                 <Stack component={Paper} variant='outlined' p={1} justifyContent={"space-evenly"} direction={"row"} >
                     <Box textAlign={"center"}>
                         <Typography variant="h2" fontSize={22}>Links</Typography>
