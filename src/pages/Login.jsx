@@ -38,7 +38,7 @@ export default function Login() {
     return (
         <ThemeProvider theme={theme} >
             <CssBaseline />
-            <Stack gap={2} component={"form"} onSubmit={handleSubmit} noValidate width={"100%"} p={1} maxWidth={"lg"} height={"100vh"} justifyContent={"center"} alignItems={"center"} >
+            <Stack gap={2} component={"form"} onSubmit={handleSubmit} noValidate width={"100%"} p={1} maxWidth={"lg"} height={"100dvh"} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"}>
                     <Typography variant="h1" fontSize={45}>Login</Typography>
                     <Typography variant="caption">Log in and start share your links</Typography>

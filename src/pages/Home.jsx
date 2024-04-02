@@ -33,7 +33,7 @@ export default function Home() {
         }
     }, [getAuth().currentUser]);
     return (
-        <Box height={"100vh"} width={"100vw"} >
+        <Box height={"100dvh"} width={"100vw"} >
             <CssBaseline />
             <Stack height={"100%"} width={"100%"} maxWidth={"lg"} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"} maxWidth={300}>
