@@ -33,9 +33,9 @@ export default function Home() {
         }
     }, [getAuth().currentUser]);
     return (
-        <Box height={"100dvh"} width={"100vw"} >
+        <Box width={"100%"} height={"100%"} mx={"auto"} >
             <CssBaseline />
-            <Stack height={"100%"} width={"100%"} maxWidth={"lg"} justifyContent={"center"} alignItems={"center"} >
+            <Stack height={"100%"} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"} maxWidth={300}>
                     <Typography variant="h1" fontSize={45}>
                         linkCreator
