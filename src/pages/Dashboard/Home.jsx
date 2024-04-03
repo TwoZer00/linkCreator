@@ -4,6 +4,7 @@ import { getUserLinks, getVisitsOfLink } from '../../firebase/utils';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { useOutletContext } from 'react-router-dom';
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
@@ -11,25 +12,27 @@ export function Home() {
     const [links, setLinks] = useState([])
     const [visits, setVisits] = useState({});
     const [countries, setCountries] = useState([]);
+    const [data, setData] = useOutletContext();
     useEffect(() => {
         const fetchLinksData = async () => {
-            const data = await getUserLinks();
-            data.sort((a, b) => {
+            setData((value) => { return { ...value, loading: true } })
+            const tempData = data?.userLinks || await getUserLinks();
+            tempData.sort((a, b) => {
                 return dayjs.unix(b.creationTime.seconds).subtract(dayjs.unix(a.creationTime.seconds));
             });
             let tempCounter = 0;
             const arrProm = []
-            data.forEach((link) => {
+            tempData.forEach((link) => {
                 arrProm.push(getVisitsOfLink(link.id))
             })
-            const visits = await Promise.all(arrProm);
+            const visits = data?.vists || await Promise.all(arrProm);
             const tempA = {}
             visits.forEach(({ id, visits }) => {
                 tempCounter += (visits.length || 0);
                 tempA[id] = visits;
             })
             const tempCountiesCounter = {}
-            data.filter((link) => {
+            tempData.filter((link) => {
                 const visits = tempA[link.id];
                 visits.filter((visit) => dayjs.unix(visit.creationTime.seconds).isSameOrAfter(dayjs().startOf('month'))).forEach((visit) => {
                     if (tempCountiesCounter[visit.country]) {
@@ -40,8 +43,10 @@ export function Home() {
                 })
             })
             setCountries(Object.entries(tempCountiesCounter));
-            setLinks(data);
+            setLinks(tempData);
             setVisits({ visits: { ...tempA }, total: tempCounter });
+            setData((value) => { return { ...value, userLinks: tempData, visits } });
+            setData((value) => { return { ...value, loading: false } })
         }
         if (links.length === 0) {
             fetchLinksData();
@@ -61,34 +66,44 @@ export function Home() {
                         <Typography variant="body1" fontSize={16}>{visits.total}</Typography>
                     </Box>
                 </Stack>
-                <Stack component={Paper} variant='outlined'>
+                <Stack component={Paper} variant='outlined' height={200}>
                     <List
                         subheader={
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><span>Latest links</span><span>Visits</span></ListSubheader>
                         }>
-                        {links.slice(0, 4).map((link) => {
+                        {links.length > 0 ? links.slice(0, 4).map((link) => {
                             return (
                                 <ListItem key={link.id}>
                                     <ListItemText primary={link.name} secondary={link.link} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{ maxWidth: "22ch", noWrap: true }} />
                                     <ListItemText primary={visits.visits[link.id]?.length || 0} sx={{ flexGrow: 0 }} primaryTypographyProps={{ width: "fit-content" }} />
                                 </ListItem>
                             )
-                        })}
+                        })
+                            :
+                            <Typography color={"GrayText"} textAlign={"center"} p={2} >
+                                No links yet!
+                            </Typography>
+                        }
                     </List>
                 </Stack>
-                <Stack component={Paper} variant='outlined'>
+                <Stack component={Paper} variant='outlined' height={200}>
                     <List
                         subheader={
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><span>Top countries last month</span><span>Visits</span></ListSubheader>
                         }>
-                        {countries.length > 0 && countries.slice(0, 4).map((country) => {
+                        {countries.length > 0 ? countries.slice(0, 4).map((country) => {
                             return (
                                 <ListItem key={country[0]}>
                                     <ListItemText primary={isoAlphaCode2ToCountries[country[0]]} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{ maxWidth: "22ch", noWrap: true }} />
                                     <ListItemText primary={country[1] || 0} sx={{ flexGrow: 0 }} primaryTypographyProps={{ width: "fit-content" }} />
                                 </ListItem>
                             )
-                        })}
+                        })
+                            :
+                            <Typography color={"GrayText"} textAlign={"center"} p={2} >
+                                No enough data!
+                            </Typography>
+                        }
                     </List>
                 </Stack>
             </Stack>

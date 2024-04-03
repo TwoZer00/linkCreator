@@ -2,11 +2,12 @@ import { ThemeProvider } from '@emotion/react';
 import { Ballot, Favorite, Home, List, ListAlt, LocationOn, Person, Restore } from '@mui/icons-material';
 import { BottomNavigation, BottomNavigationAction, Box, CssBaseline, Paper, Stack, createTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react'
-import { Link, Outlet, useLocation, useMatch, useMatches } from 'react-router-dom';
+import { Link, Outlet, useLocation, useMatch, useMatches, useOutletContext } from 'react-router-dom';
 
 export default function Dashboard() {
     const theme = createTheme();
     const location = useLocation();
+    const [data, setData] = useOutletContext();
     const PAGES = {
         "dashboard": 0,
         "links": 1,
@@ -22,7 +23,7 @@ export default function Dashboard() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Stack sx={{ flexGrow: 2, height: "100dvh" }}>
-                <Outlet />
+                <Outlet context={[data, setData]} />
                 <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3} >
                     <BottomNavigation
                         showLabels

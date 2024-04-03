@@ -4,7 +4,7 @@ import { CustomInput } from '../../components/CustomInput'
 import { checkUsernameAvailability, createUser, getUser, updateUser } from '../../firebase/utils';
 import { getAuth, signOut } from 'firebase/auth';
 import { label } from '../../locales/locale';
-import { Navigate, redirect, useLoaderData, useNavigate } from 'react-router-dom';
+import { Navigate, redirect, useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
 
 export default function Profile() {
     const [userData, setUserData] = useState();
@@ -12,13 +12,19 @@ export default function Profile() {
     const [isNewUser, setIsNewUser] = useState();
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const [data, setData] = useOutletContext();
     useEffect(() => {
         const fetchUserData = async () => {
+            setData(value => { return { ...value, loading: true } })
             try {
-                const data = await getUser();
-                setFormData(data);
+                const tempData = data?.user || await getUser();
+                setFormData(tempData);
+                setData(value => { return { ...value, user: tempData } })
             } catch (error) {
                 setIsNewUser(true);
+            }
+            finally {
+                setData(value => { return { ...value, loading: false } })
             }
         }
         if (getAuth().currentUser) {
@@ -27,6 +33,7 @@ export default function Profile() {
     }, [getAuth().currentUser]);
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setData(value => { return { ...value, loading: true } })
         const form = e.target;
         const tempErrors = { ...errors }
         form.querySelectorAll("input").forEach(async (input) => {
@@ -70,6 +77,7 @@ export default function Profile() {
                 setFormData({ ...formData, ...tempUser });
             }
         }
+        setData(value => { return { ...value, loading: false } })
     }
     return (
         <Stack height={"100%"} mb={7} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1} >

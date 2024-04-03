@@ -1,16 +1,16 @@
 import { FormControl, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material"
 
-export const CustomInput = (props) => {
+export const CustomInput = ({ error, ...props }) => {
     return (
         <FormControl disabled={props?.disabled}>
-            <InputLabel error={Boolean(props.error)} >
+            <InputLabel error={Boolean(error)} >
                 {props.label}
             </InputLabel>
             <OutlinedInput
-                error={Boolean(props.error)}
+                error={Boolean(error)}
                 {...props}
             />
-            {Boolean(props.error) && <FormHelperText error={Boolean(props.error)} id={props.id} component={Typography} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{props.error}</FormHelperText>}
+            {Boolean(error) && <FormHelperText error={Boolean(error)} id={props.id} component={Typography} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{error}.</FormHelperText>}
         </FormControl>
     )
 }
