@@ -1,4 +1,4 @@
-import { Outlet, createBrowserRouter, redirect, useHref, useNavigate } from "react-router-dom";
+import { Outlet, createBrowserRouter, redirect, useHref, useNavigate, useOutletContext } from "react-router-dom";
 import Login from '../pages/Login';
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard/Dashboard";
@@ -10,10 +10,11 @@ import { getUser, getUserFromId, getUserFromUsername, getUserLinks } from "../fi
 import UserLinks from "../pages/UserLinks";
 import Home from "../pages/Home";
 import { Home as HomeDashboard } from '../pages/Dashboard/Home'
+import Init from "../Init";
 export const router = createBrowserRouter([
     {
         path: '/',
-        element: <Box sx={{ height: "100%", display: "flex", maxWidth: "md", mx: "auto" }}><Outlet /></Box>,
+        element: <Init />,
         children: [
             {
                 path: 'login',

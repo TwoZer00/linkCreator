@@ -4,7 +4,7 @@ import { Alert, Box, Button, FormControl, FormHelperText, IconButton, InputLabel
 import { deleteUserLink, getUserLinks, setUserLink, updateUserLink } from '../../firebase/utils';
 import { CustomInput } from '../../components/CustomInput';
 import { label } from '../../locales/locale'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Close, Delete } from '@mui/icons-material';
 
 const style = {
@@ -21,10 +21,12 @@ const style = {
 export default function Links() {
     const [links, setLinks] = useState([]);
     const [link, setLink] = useState();
+    const [data, setData] = useOutletContext();
     useEffect(() => {
         const fetchLinks = async () => {
-            const data = await getUserLinks();
-            setLinks(data);
+            const tempData = data?.links || await getUserLinks();
+            setLinks(tempData);
+            setData((value) => { return { ...value, userLinks: tempData } });
         }
         fetchLinks();
     }, []);
@@ -33,9 +35,11 @@ export default function Links() {
         setLink(links.find((link) => link.id === id));
     }
     const handleDelete = async ({ id }) => {
+        setData(value => { return { ...value, loading: true } })
         const newLinks = links.filter((link) => link.id !== id);
         setLinks(newLinks);
         await deleteUserLink(id);
+        setData((value) => { return { ...value, userLinks: newLinks, loading: false } });
     }
     return (
         <>
@@ -80,8 +84,10 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
     const [errors, setErrors] = useState({});
     const [link, setLink] = useState(selectedLink || { name: "", link: "" });
     const navigate = useNavigate();
+    const [data, setData] = useOutletContext();
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setData((value) => { return { ...value, loading: true } });
         const form = e.target;
         const formData = new FormData(form);
         let tempLink = { ...link }
@@ -96,7 +102,7 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
             switch (input.id) {
                 case "link":
                     if (!input.checkValidity() || !validateURL(input.value))
-                        tempErrors.link = input.validationMessage || "invalid link";
+                        tempErrors.link = input.validationMessage || "invalid link follow pattern indicated";
                     else
                         delete tempErrors.link;
                     break;
@@ -119,15 +125,23 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
                 if (!tempLink.id) {
                     link = await setUserLink(tempLink)
                     setLinks([...links, link]);
+                    setData((value) => { return { ...value, userLinks: [...links, link] } });
                 }
                 else {
                     link = await updateUserLink(tempLink);
+                    const newLinks = links.map((linkTemp) => {
+                        if (linkTemp.id === link.id) {
+                            return link;
+                        }
+                        return linkTemp;
+                    })
                     setLinks(links.map((linkTemp) => {
                         if (linkTemp.id === link.id) {
                             return link;
                         }
                         return linkTemp;
                     }))
+                    setData((value) => { return { ...value, userLinks: newLinks } });
                     setSelectedLink({ name: "", link: "", creationTime: undefined });
                 }
                 form.reset();
@@ -138,6 +152,7 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
                 setErrors({ ...errors, global: label(error.code) });
             }
         }
+        setData((value) => { return { ...value, loading: false } });
     }
 
     const validateURL = (url) => {
@@ -160,7 +175,7 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
         }
     }, [selectedLink])
     return (<Stack component={"form"} onSubmit={handleSubmit} noValidate gap={2} >
-        <CustomInput id="link" label="Link" type="text" error={errors?.link} autoComplete="off" required value={link.link} onChange={(e) => { setLink({ ...link, link: e.target.value }) }} />
+        <CustomInput id="link" label="Link" type="text" placeholder="https://google.com" error={errors?.link} autoComplete="off" required value={link.link} onChange={(e) => { setLink({ ...link, link: e.target.value }) }} />
         <CustomInput id="name" label="Name" type="text" error={errors?.name} autoComplete="off" required value={link.name} onChange={(e) => { setLink({ ...link, name: e.target.value }) }} />
         <Button variant='contained' type="submit">save</Button>
         <Snackbar

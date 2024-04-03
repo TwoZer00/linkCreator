@@ -2,7 +2,7 @@ import { ThemeProvider } from '@emotion/react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Box, Button, CssBaseline, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, Stack, Typography, createTheme } from '@mui/material';
 import React, { useState } from 'react';
-import { useNavigate, Link as LinkRouterDom } from 'react-router-dom';
+import { useNavigate, Link as LinkRouterDom, useOutlet, useOutletContext } from 'react-router-dom';
 import { registerEmailPassword } from '../firebase/utils';
 import { CustomInput } from './Login';
 import { label, labels } from '../locales/locale'
@@ -12,8 +12,10 @@ export default function Register() {
     const theme = createTheme();
     const [error, setError] = useState();
     const navigate = useNavigate();
+    const [data, setData] = useOutletContext();
     const handleSubmit = async (event) => {
         event.preventDefault();
+        setData((value) => { return { ...value, loading: true } })
         const form = event.currentTarget;
         const data = new FormData(event.currentTarget);
         const userRegister = {
@@ -49,6 +51,12 @@ export default function Register() {
                 else
                     setError({ ...error, other: label(error.code) })
             }
+            finally {
+                setData((value) => { return { ...value, loading: false } })
+            }
+        }
+        else {
+            setData((value) => { return { ...value, loading: false } })
         }
     }
     return (
@@ -59,8 +67,8 @@ export default function Register() {
                     <Typography variant="h1" fontSize={45}>Register</Typography>
                     <Typography variant="caption">Create your account</Typography>
                 </Box>
-                <CustomInput id={"email"} label={"Email"} required type={"email"} error={error?.email} />
-                <CustomInput id={"username"} label={"Username"} required type={"text"} error={error?.username} />
+                <CustomInput id={"email"} label={"Email"} required type={"email"} error={error?.email} autoComplete="email" name="email" autoFocus={true} />
+                <CustomInput id={"username"} label={"Username"} required type={"text"} error={error?.username} autoComplete="username" name="username" />
                 <PasswordInput error={{ confirmPassword: error?.confirmPassword, password: error?.password }} />
                 <Button variant='contained' type='submit' fullWidth >
                     Register

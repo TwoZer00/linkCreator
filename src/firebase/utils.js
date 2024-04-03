@@ -5,7 +5,7 @@ import { UserAvailabilityError, UserNotFoundError } from "../errors/userAvailabi
 const auth = getAuth(app);
 const db = getFirestore(app);
 export const logEmailPassword = async (user) => {
-    await signInWithEmailAndPassword(auth, user.email, user.password)
+    await signInWithEmailAndPassword(auth, user.email, user.password);
 }
 export const registerEmailPassword = async (user) => {
     await checkUsernameAvailability(user.username)
