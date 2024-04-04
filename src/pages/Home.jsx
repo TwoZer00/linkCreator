@@ -5,7 +5,7 @@ import { AccountCircle, Menu as MenuIcon, More, Search } from '@mui/icons-materi
 import { AppBar, Box, Button, CssBaseline, IconButton, Menu, MenuItem, Paper, Slide, Stack, Toolbar, Typography, useScrollTrigger } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth';
-
+import { label } from '../locales/locale';
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     alignItems: 'flex-start',
     paddingTop: theme.spacing(1),
@@ -41,14 +41,14 @@ export default function Home() {
                         linkCreator
                     </Typography>
                     <Typography variant="h5" fontSize={15}>
-                        Create links to share with your friends.
+                        {label("home-subtitle")}
                     </Typography>
                     <Stack direction={"row"} justifyContent={"space-around"} mt={2}>
                         <Button variant="contained" onClick={() => navigate("/login")}>
-                            Log in
+                            {label("login")}
                         </Button>
                         <Button variant="contained" onClick={() => navigate("/register")}>
-                            Sign up
+                            {label("register")}
                         </Button>
                     </Stack>
                 </Box>

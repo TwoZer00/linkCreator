@@ -44,8 +44,8 @@ export default function Links() {
     return (
         <>
             <Stack direction={"column"} height={"100%"} mb={7} position={"relative"} p={1} gap={2}>
-                <Typography variant="h1" fontSize={22}>My Links</Typography>
-                <Typography variant="h3" fontSize={16}>Add your links here</Typography>
+                <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links")}</Typography>
+                <Typography variant="h3" fontSize={16} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links-subtitle")}</Typography>
                 <InputLink links={links} setLinks={setLinks} selectedLink={link} setSelectedLink={setLink} />
                 <LinksList onClick={handleClick} deleteAction={handleDelete} dataList={links} />
             </Stack>
@@ -175,9 +175,9 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
         }
     }, [selectedLink])
     return (<Stack component={"form"} onSubmit={handleSubmit} noValidate gap={2} >
-        <CustomInput id="link" label="Link" type="text" placeholder="https://google.com" error={errors?.link} autoComplete="off" required value={link.link} onChange={(e) => { setLink({ ...link, link: e.target.value }) }} />
-        <CustomInput id="name" label="Name" type="text" error={errors?.name} autoComplete="off" required value={link.name} onChange={(e) => { setLink({ ...link, name: e.target.value }) }} />
-        <Button variant='contained' type="submit">save</Button>
+        <CustomInput id="link" label={label("link")} type="text" placeholder="https://google.com" error={errors?.link} autoComplete="off" required value={link.link} onChange={(e) => { setLink({ ...link, link: e.target.value }) }} />
+        <CustomInput id="name" label={label("name")} type="text" error={errors?.name} autoComplete="off" required value={link.name} onChange={(e) => { setLink({ ...link, name: e.target.value }) }} />
+        <Button variant='contained' type="submit">{label("save")}</Button>
         <Snackbar
             open={Boolean(errors.global)}
             autoHideDuration={10000}

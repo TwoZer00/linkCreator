@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import { useOutletContext } from 'react-router-dom';
+import { label } from "../../locales/locale"
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
@@ -58,18 +59,18 @@ export function Home() {
             <Stack width={"100%"} height={"100dvh"} p={1} gap={2}>
                 <Stack component={Paper} variant='outlined' p={1} justifyContent={"space-evenly"} direction={"row"} >
                     <Box textAlign={"center"}>
-                        <Typography variant="h2" fontSize={22}>Links</Typography>
+                        <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("links")}</Typography>
                         <Typography variant="body1" fontSize={16}>{links.length}</Typography>
                     </Box>
                     <Box textAlign={"center"}>
-                        <Typography variant="h2" fontSize={22}>Visits</Typography>
+                        <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("visits")}</Typography>
                         <Typography variant="body1" fontSize={16}>{visits.total}</Typography>
                     </Box>
                 </Stack>
                 <Stack component={Paper} variant='outlined' height={200}>
                     <List
                         subheader={
-                            <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><span>Latest links</span><span>Visits</span></ListSubheader>
+                            <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between", ":first-letter": { textTransform: 'uppercase' } }}><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("latest-links")}</Typography><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
                         }>
                         {links.length > 0 ? links.slice(0, 4).map((link) => {
                             return (
@@ -80,8 +81,8 @@ export function Home() {
                             )
                         })
                             :
-                            <Typography color={"GrayText"} textAlign={"center"} p={2} >
-                                No links yet!
+                            <Typography color={"GrayText"} textAlign={"center"} p={2} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >
+                                {label("no-links")}
                             </Typography>
                         }
                     </List>
@@ -89,7 +90,7 @@ export function Home() {
                 <Stack component={Paper} variant='outlined' height={200}>
                     <List
                         subheader={
-                            <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><span>Top countries last month</span><span>Visits</span></ListSubheader>
+                            <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("top-countries")} {label("last-month")}</Typography><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
                         }>
                         {countries.length > 0 ? countries.slice(0, 4).map((country) => {
                             return (
@@ -100,8 +101,10 @@ export function Home() {
                             )
                         })
                             :
-                            <Typography color={"GrayText"} textAlign={"center"} p={2} >
-                                No enough data!
+                            <Typography color={"GrayText"} textAlign={"center"} p={2} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >
+                                {
+                                    label("not-enough-data")
+                                }
                             </Typography>
                         }
                     </List>

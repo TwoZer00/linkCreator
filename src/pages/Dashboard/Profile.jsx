@@ -81,17 +81,16 @@ export default function Profile() {
     }
     return (
         <Stack height={"100%"} mb={7} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1} >
-            <Typography variant="h1" fontSize={22}>My profile</Typography>
+            <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("my-profile")}</Typography>
             {isNewUser && <Alert severity="warning" >
-                You dont have a user, this could be for an error during register or a reset of your account.
-                If is the case you can create a new username, if you need more info. you can contact the admin (admin@linkcreator.app).
+                {label("warning-message-user")}.
             </Alert>}
-            <CustomInput label="username" id="username" name="username" value={formData?.username} error={errors?.username} onChange={(e) => { setFormData({ ...formData, username: e.target.value }) }} required />
-            <CustomInput label="email" id="email" name="email" value={formData?.email} disabled onChange={(e) => { setUssetFormDataerData({ ...formData, email: e.target.value }) }} readOnly />
-            <Button variant='contained' type='submit'>save</Button>
+            <CustomInput label={label("username")} id="username" name="username" value={formData?.username} error={errors?.username} onChange={(e) => { setFormData({ ...formData, username: e.target.value }) }} required />
+            <CustomInput label={label("email")} id="email" name="email" value={formData?.email} disabled onChange={(e) => { setUssetFormDataerData({ ...formData, email: e.target.value }) }} readOnly />
+            <Button variant='contained' type='submit'>{label("save")}</Button>
             <Stack direction={"column"} mt={"auto"} gap={2}>
-                <Button variant='outlined' type='button' onClick={() => { navigate(`/${formData.username || getAuth().currentUser.uid}`) }} >View page</Button>
-                <Button variant='text' color='error' size='small' type='button' onClick={async () => { await signOut(getAuth()); navigate("/") }} >log out</Button>
+                <Button variant='outlined' type='button' onClick={() => { navigate(`/${formData.username || getAuth().currentUser.uid}`) }} >{label("view-page")}</Button>
+                <Button variant='text' color='error' size='small' type='button' onClick={async () => { await signOut(getAuth()); navigate("/") }} >{label("logout")}</Button>
             </Stack>
         </Stack>
     )

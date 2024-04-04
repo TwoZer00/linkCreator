@@ -3,6 +3,7 @@ import { Ballot, Favorite, Home, List, ListAlt, LocationOn, Person, Restore } fr
 import { BottomNavigation, BottomNavigationAction, Box, CssBaseline, Paper, Stack, createTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useMatch, useMatches, useOutletContext } from 'react-router-dom';
+import { label } from '../../locales/locale';
 
 export default function Dashboard() {
     const theme = createTheme();
@@ -32,9 +33,21 @@ export default function Dashboard() {
                             setValue(newValue);
                         }}
                     >
-                        <BottomNavigationAction LinkComponent={Link} to={"."} relative="path" label="Home" icon={<Home />} />
-                        <BottomNavigationAction LinkComponent={Link} to={"links"} label="Links" icon={<Ballot />} />
-                        <BottomNavigationAction LinkComponent={Link} to={"profile"} label="Profile" icon={<Person />} />
+                        <BottomNavigationAction LinkComponent={Link} to={"."} relative="path" label={label("home")} icon={<Home />} sx={{
+                            "& .MuiBottomNavigationAction-label": {
+                                ":first-letter": { textTransform: "uppercase" }
+                            }
+                        }} />
+                        <BottomNavigationAction LinkComponent={Link} to={"links"} label={label("links")} icon={<Ballot />} sx={{
+                            "& .MuiBottomNavigationAction-label": {
+                                ":first-letter": { textTransform: "uppercase" }
+                            }
+                        }} />
+                        <BottomNavigationAction LinkComponent={Link} to={"profile"} label={label("profile")} sx={{
+                            "& .MuiBottomNavigationAction-label": {
+                                ":first-letter": { textTransform: "uppercase" }
+                            }
+                        }} icon={<Person />} />
                     </BottomNavigation>
                 </Paper>
             </Stack>

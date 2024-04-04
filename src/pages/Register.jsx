@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link as LinkRouterDom, useOutlet, useOutletContext } from 'react-router-dom';
 import { registerEmailPassword } from '../firebase/utils';
 import { CustomInput } from './Login';
-import { label, labels } from '../locales/locale'
+import { label } from '../locales/locale'
 
 
 export default function Register() {
@@ -64,16 +64,16 @@ export default function Register() {
             <CssBaseline />
             <Stack component={"form"} gap={2} onSubmit={handleSubmit} height={"100dvh"} width={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"}>
-                    <Typography variant="h1" fontSize={45}>Register</Typography>
-                    <Typography variant="caption">Create your account</Typography>
+                    <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("register")}</Typography>
+                    <Typography variant="caption" sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("register-subtitle")}</Typography>
                 </Box>
-                <CustomInput id={"email"} label={"Email"} required type={"email"} error={error?.email} autoComplete="email" name="email" autoFocus={true} />
-                <CustomInput id={"username"} label={"Username"} required type={"text"} error={error?.username} autoComplete="username" name="username" />
+                <CustomInput id={"email"} label={label("email")} required type={"email"} error={error?.email} autoComplete="email" name="email" autoFocus={true} />
+                <CustomInput id={"username"} label={label("username")} required type={"text"} error={error?.username} autoComplete="username" name="username" />
                 <PasswordInput error={{ confirmPassword: error?.confirmPassword, password: error?.password }} />
                 <Button variant='contained' type='submit' fullWidth >
-                    Register
+                    {label("register")}
                 </Button>
-                <Link component={LinkRouterDom} to={'/login'} variant='body1' textAlign={"center"} >Already register? log in here</Link>
+                <Link component={LinkRouterDom} to={'/login'} variant='body1' textAlign={"center"} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("login-here")}</Link>
                 {Boolean(error?.other) && <FormHelperText error={true} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{error?.other}</FormHelperText>}
             </Stack>
         </ThemeProvider>
@@ -90,7 +90,7 @@ const PasswordInput = ({ error }) => {
     return (
         <>
             <FormControl variant="outlined" error={Boolean(error?.password)} fullWidth>
-                <InputLabel htmlFor="outlined-adornment-password" error={Boolean(error?.password)}>Password</InputLabel>
+                <InputLabel htmlFor="outlined-adornment-password" error={Boolean(error?.password)} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("password")}</InputLabel>
                 <OutlinedInput
                     id="outlined-adornment-password"
                     type={showPassword ? 'text' : 'password'}
@@ -108,14 +108,14 @@ const PasswordInput = ({ error }) => {
                     }
                     autoComplete='current-password'
                     name='password'
-                    label="Password"
+                    label={label("password")}
                     required
                     error={Boolean(error?.password)}
                 />
                 {Boolean(error?.password) && <FormHelperText error={Boolean(error?.password)} id="password">{error?.password}</FormHelperText>}
             </FormControl >
             <FormControl variant="outlined" error={Boolean(error?.confirmPassword)} fullWidth>
-                <InputLabel error={Boolean(error?.confirmPassword)} htmlFor="confirmPassword">Confirm password</InputLabel>
+                <InputLabel error={Boolean(error?.confirmPassword)} htmlFor="confirmPassword" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("confirm-password")}</InputLabel>
                 <OutlinedInput
                     id="confirmPassword"
                     type={showPassword ? 'text' : 'password'}
@@ -135,7 +135,7 @@ const PasswordInput = ({ error }) => {
                     required
                     name='confirmPassword'
                     autoComplete='confirm-password'
-                    label="Confirm password"
+                    label={label("confirm-password")}
                 />
                 {Boolean(error?.confirmPassword) && <FormHelperText error={Boolean(error?.confirmPassword)} id="confirmPassword">{error?.confirmPassword}</FormHelperText>}
             </FormControl>
