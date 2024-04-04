@@ -2,6 +2,7 @@ import { Alert, AlertTitle, Avatar, Box, Button, CssBaseline, Divider, Link, Pap
 import React from 'react'
 import { useLoaderData, useParams, Link as RouterLink, redirect } from 'react-router-dom'
 import { setLinkClickCounter } from '../firebase/utils';
+import { label } from '../locales/locale';
 
 export default function UserLinks() {
     const user = useLoaderData();
@@ -16,7 +17,7 @@ export default function UserLinks() {
         }
     }
     return (
-        <Box height={"100dvh"} width={"100vw"} >
+        <Box height={"100%"}>
             <CssBaseline />
             <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} height={"100%"} gap={1} p={1}>
                 <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} py={2} gap={1} flex={0} >
@@ -31,10 +32,10 @@ export default function UserLinks() {
                         </Box>)
                     })
                         :
-                        <Typography variant="h2" fontSize={18} fontStyle={"italic"} color={"GrayText"}>No links</Typography>
+                        <Typography variant="h2" fontSize={18} fontStyle={"italic"} color={"GrayText"} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("no-links")}</Typography>
                     }
                 </Stack>
-                <Typography variant="h2" fontSize={12} fontStyle={"italic"} color={"GrayText"}>Created using linkCreator&copy; , create yours <Link component={RouterLink} to="/" >here</Link> </Typography>
+                <Typography variant="h2" fontSize={12} fontStyle={"italic"} color={"GrayText"}>{label("footer-userlinks-message")} <Link component={RouterLink} to="/" >{label("here")}</Link> </Typography>
             </Stack>
             {/* <Box component={Alert} icon={false} severity='warning' variant='standard' position={"fixed"} bottom={0} height={"auto"} fontSize={12} dipls action={
                 <Button color="inherit" size="small">

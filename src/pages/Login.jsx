@@ -3,6 +3,7 @@ import { Backdrop, Box, Button, CssBaseline, FormControl, FormHelperText, InputL
 import React, { useState } from 'react';
 import { Link as LinkRouterDom, useNavigate, useOutletContext } from 'react-router-dom';
 import { logEmailPassword } from '../firebase/utils';
+import { label } from '../locales/locale';
 
 export default function Login() {
     const theme = createTheme();
@@ -49,13 +50,13 @@ export default function Login() {
             <CssBaseline />
             <Stack gap={2} component={"form"} onSubmit={handleSubmit} noValidate width={"100%"} height={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"}>
-                    <Typography variant="h1" fontSize={45}>Login</Typography>
-                    <Typography variant="caption">Log in and start share your links</Typography>
+                    <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("login-opt")}</Typography>
+                    <Typography variant="caption" sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("login-subtitle")}</Typography>
                 </Box>
-                <CustomInput id="email" label="Email" name="email" type="email" error={error?.email} required autoComplete="email" autoFocus={true} />
-                <CustomInput id="password" label="Password" name="password" type="password" error={error?.password} required autoComplete="current-password" />
-                <Button variant="contained" type="submit" fullWidth >Login</Button>
-                <Link component={LinkRouterDom} to={"/register"} variant='body1' textAlign={"center"}>Register here</Link>
+                <CustomInput id="email" label={label("email")} name="email" type="email" error={error?.email} required autoComplete="email" autoFocus={true} />
+                <CustomInput id="password" label={label("password")} name="password" type="password" error={error?.password} required autoComplete="current-password" />
+                <Button variant="contained" type="submit" fullWidth >{label("login")}</Button>
+                <Link component={LinkRouterDom} to={"/register"} variant='body1' textAlign={"center"} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("register-here")}</Link>
             </Stack>
         </ThemeProvider>
     )
@@ -65,7 +66,7 @@ export const CustomInput = ({ id, label, error, ...props }) => {
     return (
         <>
             <FormControl error={Boolean(error)} fullWidth>
-                <InputLabel error={Boolean(error)} htmlFor={id}>{label}</InputLabel>
+                <InputLabel error={Boolean(error)} htmlFor={id} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label}</InputLabel>
                 <OutlinedInput
                     id={id}
                     label={label}
