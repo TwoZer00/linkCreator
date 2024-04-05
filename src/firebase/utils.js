@@ -22,13 +22,13 @@ export const checkUsernameAvailability = async (username) => {
         throw new UserAvailabilityError("Username already taken", "auth-custom/username-already-in-use")
 }
 
-export const createUser = async (username) => {
+export const createUser = async (data) => {
     const db = getFirestore(app);
     const userRef = doc(db, "user", auth.currentUser.uid);
     const user = {
-        username: username,
         email: auth.currentUser.email,
         creationTime: Timestamp.fromDate(new Date(auth.currentUser.metadata.creationTime)),
+        ...data
     }
     await setDoc(userRef, user)
     return { ...user, id: userRef.id };
