@@ -35,5 +35,8 @@
     "warning-message-user": "no se tiene un usuario, esto puede deberse a un error durante el registro o a un reinicio de cuenta. Si alguno de estos es el caso puedes crear un nuevo nombre de usuario. Si necesitas mas informacion contacta a admin@linkcreator.app",
     "footer-userlinks-message": "creado usando linkCreator©, crea el tuyo",
     "here": "aqui",
-    "home-subtitle": "Crear links y compartelos con tus amigos"
+    "home-subtitle": "Crear links y compartelos con tus amigos",
+    "social-networks": "redes sociales",
+    "personal-info": "información personal",
+    "description": "descripción"
 }

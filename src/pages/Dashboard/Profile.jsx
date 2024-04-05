@@ -1,5 +1,5 @@
 import { Alert, Box, Button, Stack, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CustomInput } from '../../components/CustomInput'
 import { checkUsernameAvailability, createUser, getUser, updateUser } from '../../firebase/utils';
 import { getAuth, signOut } from 'firebase/auth';
@@ -13,12 +13,15 @@ export default function Profile() {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     const [data, setData] = useOutletContext();
+    // const patternRef = useRef({youtube: "", facebook: "", x: "", linkedin: "", github: "", instagram: "", pinterest: ""});
+    const [socialNetwork, setSocialNetwork] = useState({ youtube: "", facebook: "", x: "", linkedin: "", github: "", instagram: "", pinterest: "" });
     useEffect(() => {
         const fetchUserData = async () => {
             setData(value => { return { ...value, loading: true } })
             try {
                 const tempData = data?.user || await getUser();
                 setFormData(tempData);
+                setSocialNetwork(tempData["socialNetwork"] || { youtube: "", facebook: "", x: "", linkedin: "", github: "", instagram: "", pinterest: "" });
                 setData(value => { return { ...value, user: tempData } })
             } catch (error) {
                 setIsNewUser(true);
@@ -64,17 +67,18 @@ export default function Profile() {
             setErrors({});
             if (isNewUser) {
                 console.log("create");
-                const tempUser = await createUser(formData.username);
+                const tempUser = await createUser({ socialNetwork, username: formData.username });
                 setFormData(tempUser);
                 setIsNewUser(false);
             }
             else {
                 console.log("update");
-                const tempUserData = { ...formData };
+                const tempUserData = { ...formData, socialNetwork };
+                // console.log(tempUserData);
                 delete tempUserData.id;
                 delete tempUserData.email;
                 const tempUser = await updateUser(tempUserData);
-                setFormData({ ...formData, ...tempUser });
+                // setFormData({ ...formData, ...tempUser });
             }
         }
         setData(value => { return { ...value, loading: false } })
@@ -86,7 +90,14 @@ export default function Profile() {
                 {label("warning-message-user")}.
             </Alert>}
             <CustomInput label={label("username")} id="username" name="username" value={formData?.username} error={errors?.username} onChange={(e) => { setFormData({ ...formData, username: e.target.value }) }} required />
+            <CustomInput label={label("description")} id="description" multiline rows={3} name="description" value={formData?.description} onChange={(e) => { setFormData({ ...formData, description: e.target.value }) }} />
             <CustomInput label={label("email")} id="email" name="email" value={formData?.email} disabled onChange={(e) => { setUssetFormDataerData({ ...formData, email: e.target.value }) }} readOnly />
+            <Stack gap={2}>
+                <Typography variant="h3" fontSize={18} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("social-networks")}</Typography>
+                {Object.keys(socialNetwork).map((key) => {
+                    return <CustomInput key={key} label={key} id={key} placeholder={"e.g. twozer00"} autoComplete={key} name={key} value={socialNetwork[key]} onChange={(e) => { setSocialNetwork({ ...socialNetwork, [key]: e.target.value }) }} />;
+                })}
+            </Stack>
             <Button variant='contained' type='submit'>{label("save")}</Button>
             <Stack direction={"column"} mt={"auto"} gap={2}>
                 <Button variant='outlined' type='button' onClick={() => { navigate(`/${formData.username || getAuth().currentUser.uid}`) }} >{label("view-page")}</Button>
