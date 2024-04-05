@@ -7,7 +7,7 @@ import { label } from '../locales/locale';
 
 export default function UserLinks() {
     const user = useLoaderData();
-    const ref = useRef({ youtube: ["https://youtube.com/", <YouTube fontSize='large' />], facebook: ["https://facebook.com/", <Facebook fontSize='large' />], x: ["https://twitter.com/", <X fontSize='large' />], linkedin: ["https://linkedin/", <LinkedIn fontSize='large' />], github: ["https://github.com/", <GitHub fontSize='large' />], instagram: ["https://instagram.com/", <Instagram fontSize='large' />], pinterest: ["https://pinterest.com/", <Pinterest fontSize='large' />] })
+    const ref = useRef({ youtube: ["https://youtube.com/@", <YouTube fontSize='large' />], facebook: ["https://facebook.com/", <Facebook fontSize='large' />], x: ["https://twitter.com/", <X fontSize='large' />], linkedin: ["https://linkedin/", <LinkedIn fontSize='large' />], github: ["https://github.com/", <GitHub fontSize='large' />], instagram: ["https://instagram.com/", <Instagram fontSize='large' />], pinterest: ["https://pinterest.com/", <Pinterest fontSize='large' />] })
     const handleClick = async ({ link, id }) => {
         try {
             await setLinkClickCounter(id);
