@@ -13,7 +13,6 @@ export default function Profile() {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
     const [data, setData] = useOutletContext();
-    // const patternRef = useRef({youtube: "", facebook: "", x: "", linkedin: "", github: "", instagram: "", pinterest: ""});
     const [socialNetwork, setSocialNetwork] = useState({ youtube: "", facebook: "", x: "", linkedin: "", github: "", instagram: "", pinterest: "" });
     useEffect(() => {
         const fetchUserData = async () => {
@@ -74,11 +73,10 @@ export default function Profile() {
             else {
                 console.log("update");
                 const tempUserData = { ...formData, socialNetwork };
-                // console.log(tempUserData);
                 delete tempUserData.id;
                 delete tempUserData.email;
                 const tempUser = await updateUser(tempUserData);
-                // setFormData({ ...formData, ...tempUser });
+                setFormData({ ...formData, ...tempUser });
             }
         }
         setData(value => { return { ...value, loading: false } })
