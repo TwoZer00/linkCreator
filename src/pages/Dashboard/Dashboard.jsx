@@ -23,11 +23,12 @@ export default function Dashboard() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Stack sx={{ flexGrow: 2, height: "100dvh" }}>
+            <Box height={"100%"}>
                 <Outlet context={[data, setData]} />
-                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3} >
+                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1, backgroundColor: "rgba(255,255,255,0.2)", backdropFilter: "blur(64px)" }} elevation={3} >
                     <BottomNavigation
                         showLabels
+                        sx={{ backgroundColor: "transparent" }}
                         value={value}
                         onChange={(event, newValue) => {
                             setValue(newValue);
@@ -50,7 +51,7 @@ export default function Dashboard() {
                         }} icon={<Person />} />
                     </BottomNavigation>
                 </Paper>
-            </Stack>
+            </Box>
         </ThemeProvider>
     )
 }

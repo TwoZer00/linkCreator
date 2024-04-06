@@ -56,7 +56,7 @@ export function Home() {
     return (
         <>
             <CssBaseline />
-            <Stack width={"100%"} height={"100dvh"} p={1} gap={2}>
+            <Stack width={"100%"} height={"100%"} p={1} gap={2} pb={8}>
                 <Stack component={Paper} variant='outlined' p={1} justifyContent={"space-evenly"} direction={"row"} >
                     <Box textAlign={"center"}>
                         <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("links")}</Typography>
@@ -91,7 +91,9 @@ export function Home() {
                     <List
                         subheader={
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("top-countries")} {label("last-month")}</Typography><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
-                        }>
+                        }
+                        sx={{ pb: 8 }}
+                    >
                         {countries.length > 0 ? countries.slice(0, 4).map((country) => {
                             return (
                                 <ListItem key={country[0]}>
