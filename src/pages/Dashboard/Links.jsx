@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import { Alert, Box, Button, FormControl, FormHelperText, IconButton, InputLabel, OutlinedInput, Paper, Snackbar, Stack } from '@mui/material'
+import { Alert, Box, Button, CssBaseline, FormControl, FormHelperText, IconButton, InputLabel, OutlinedInput, Paper, Snackbar, Stack } from '@mui/material'
 import { deleteUserLink, getUserLinks, setUserLink, updateUserLink } from '../../firebase/utils';
 import { CustomInput } from '../../components/CustomInput';
 import { label } from '../../locales/locale'
@@ -43,7 +43,8 @@ export default function Links() {
     }
     return (
         <>
-            <Stack direction={"column"} height={"100%"} mb={7} position={"relative"} p={1} gap={2}>
+            <CssBaseline />
+            <Stack direction={"column"} height={"100%"} position={"relative"} p={1} gap={2} pb={8}>
                 <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links")}</Typography>
                 <Typography variant="h3" fontSize={16} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links-subtitle")}</Typography>
                 <InputLink links={links} setLinks={setLinks} selectedLink={link} setSelectedLink={setLink} />

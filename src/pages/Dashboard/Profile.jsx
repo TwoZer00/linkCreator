@@ -82,7 +82,7 @@ export default function Profile() {
         setData(value => { return { ...value, loading: false } })
     }
     return (
-        <Stack height={"100%"} mb={7} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1} >
+        <Stack height={"100%"} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1}>
             <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("my-profile")}</Typography>
             {isNewUser && <Alert severity="warning" >
                 {label("warning-message-user")}.
@@ -97,8 +97,8 @@ export default function Profile() {
                 })}
             </Stack>
             <Button variant='contained' type='submit'>{label("save")}</Button>
-            <Stack direction={"column"} mt={"auto"} gap={2}>
-                <Button variant='outlined' type='button' onClick={() => { navigate(`/${formData.username || getAuth().currentUser.uid}`) }} >{label("view-page")}</Button>
+            <Stack direction={"column"} mt={"auto"} gap={2} pb={8}>
+                <Button type='button' variant='contained' onClick={() => { navigate(`/${formData.username || getAuth().currentUser.uid}`) }} >{label("view-page")}</Button>
                 <Button variant='text' color='error' size='small' type='button' onClick={async () => { await signOut(getAuth()); navigate("/") }} >{label("logout")}</Button>
             </Stack>
         </Stack>
