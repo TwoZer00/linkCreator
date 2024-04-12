@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } f
 import { Timestamp, addDoc, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, query, runTransaction, setDoc, updateDoc, where } from 'firebase/firestore';
 import { app } from '../firebase/init';
 import { UserAvailabilityError, UserNotFoundError } from "../errors/userAvailability";
+import { getStorage, ref, uploadBytes, uploadString } from 'firebase/storage';
 const auth = getAuth(app);
 const db = getFirestore(app);
 export const logEmailPassword = async (user) => {
@@ -10,7 +11,7 @@ export const logEmailPassword = async (user) => {
 export const registerEmailPassword = async (user) => {
     await checkUsernameAvailability(user.username)
     await createUserWithEmailAndPassword(auth, user.email, user.password)
-    await createUser(user.username)
+    await createUser({ username: user.username })
 }
 
 export const checkUsernameAvailability = async (username) => {
@@ -36,8 +37,17 @@ export const createUser = async (data) => {
 
 export const updateUser = async (data) => {
     const userRef = doc(db, "user", auth.currentUser.uid);
-    await updateDoc(userRef, { ...data, lastModificationTime: Timestamp.fromDate(new Date()) });
+    const image = await updateAvatarImage(data.avatar);
+    await updateDoc(userRef, { ...data, lastModificationTime: Timestamp.fromDate(new Date()), avatar: image });
     return { ...data, id: userRef.id };
+}
+
+export const updateAvatarImage = async (image) => {
+    const storage = getStorage(app);
+    console.log(image);
+    const storageRef = ref(storage, `avatar/${auth.currentUser.uid}`);
+    await uploadBytes(storageRef, image);
+    return storageRef.fullPath;
 }
 
 export const setUserLink = async (data) => {

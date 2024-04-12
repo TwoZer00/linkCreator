@@ -41,7 +41,6 @@ export default function Register() {
                 navigate('/dashboard');
             }
             catch (error) {
-                // console.log((error.code).replace("/", "-").split("-").includes("password"), error.code, label(error.code));
                 if ((error.code).replace("/", "-").split("-").includes("email"))
                     setError({ ...error, email: label(error.code) });
                 else if ((error.code).replace("/", "-").split("-").includes("password"))

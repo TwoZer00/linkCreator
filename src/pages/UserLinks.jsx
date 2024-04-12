@@ -4,6 +4,7 @@ import React, { useRef } from 'react'
 import { useLoaderData, useParams, Link as RouterLink, redirect } from 'react-router-dom'
 import { setLinkClickCounter } from '../firebase/utils';
 import { label } from '../locales/locale';
+import CustomAvatar from '../components/CustomAvatar';
 
 export default function UserLinks() {
     const user = useLoaderData();
@@ -23,7 +24,7 @@ export default function UserLinks() {
             <CssBaseline />
             <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} height={"100%"} gap={1} p={1}>
                 <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} py={2} gap={1} flex={0} >
-                    <Avatar src={"/img.jpg"} alt={user.username} sx={{ width: 70, height: "auto", aspectRatio: 1 }} />
+                    <CustomAvatar src={user.avatar} alt={user.username} sx={{ width: 80, height: "auto", aspectRatio: 1 }} />
                     <Typography variant="h1" fontSize={45}>{user.username}</Typography>
                     <Typography variant="body1" fontSize={16}>{user?.description}</Typography>
                     <Stack direction={"row"} gap={1} alignItems={"center"}>
@@ -45,7 +46,7 @@ export default function UserLinks() {
                         <Typography variant="h2" fontSize={18} fontStyle={"italic"} color={"GrayText"} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("no-links")}</Typography>
                     }
                 </Stack>
-                <Typography variant="h2" fontSize={12} fontStyle={"italic"} color={"GrayText"}>{label("footer-userlinks-message")} <Link component={RouterLink} to="/" >{label("here")}</Link> </Typography>
+                <Typography variant="h2" fontSize={12} fontStyle={"italic"} color={"GrayText"} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("footer-userlinks-message")} <Link component={RouterLink} to="/" >{label("here")}</Link> </Typography>
             </Stack>
             {/* <Box component={Alert} icon={false} severity='warning' variant='standard' position={"fixed"} bottom={0} height={"auto"} fontSize={12} dipls action={
                 <Button color="inherit" size="small">
