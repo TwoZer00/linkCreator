@@ -5,9 +5,9 @@ import { checkUsernameAvailability, createUser, getUser, updateUser } from '../.
 import { getAuth, signOut } from 'firebase/auth';
 import { label } from '../../locales/locale';
 import { Navigate, redirect, useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
+import CustomAvatar from '../../components/CustomAvatar';
 
 export default function Profile() {
-    const [userData, setUserData] = useState();
     const [formData, setFormData] = useState(useLoaderData());
     const [isNewUser, setIsNewUser] = useState();
     const [errors, setErrors] = useState({});
@@ -84,6 +84,10 @@ export default function Profile() {
     return (
         <Stack height={"100%"} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1}>
             <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("my-profile")}</Typography>
+            <Stack direction={"row"} alignItems={"center"} gap={2}>
+                <CustomAvatar src={formData?.avatar} alt={formData?.username} />
+                <CustomInput type={"file"} id={"avatar"} error={errors?.avatar} name={"avatar"} accept={"image/*"} onChange={(e) => { setFormData({ ...formData, avatar: e.target.files[0] }) }} />
+            </Stack>
             {isNewUser && <Alert severity="warning" >
                 {label("warning-message-user")}.
             </Alert>}
