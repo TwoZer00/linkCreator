@@ -9,7 +9,7 @@ export default function CustomAvatar(props) {
         const fetchAvatar = async () => {
             const reference = ref(getStorage(app), props.src)
             const url = await getDownloadURL(reference);
-            console.log(url);
+            // console.log(url);
             setAvatar(url);
         }
         if (typeof (props.src) === "string") {
@@ -17,6 +17,7 @@ export default function CustomAvatar(props) {
         }
         else {
             if (props.src) {
+                console.log(props.src);
                 setAvatar(URL.createObjectURL(props.src));
             }
         }
