@@ -75,18 +75,44 @@ export default function Profile() {
                 const tempUserData = { ...formData, socialNetwork };
                 delete tempUserData.id;
                 delete tempUserData.email;
-                const tempUser = await updateUser(tempUserData);
-                setFormData({ ...formData, ...tempUser });
+                try {
+                    const tempUser = await updateUser(tempUserData);
+                    setFormData({ ...formData, ...tempUser });
+                } catch (error) {
+                    setErrors({ ...errors, global: error.message });
+                }
             }
         }
         setData(value => { return { ...value, loading: false } })
     }
+    const handleFile = (e) => {
+        const file = e.target.files[0];
+        let error = "";
+        if (file.size > 870400) {
+            error = "File size must be less than 850KB";
+        }
+        if (!file.type.includes("image/")) {
+            error = "File must be a image";
+        }
+        const tempErrors = { ...errors }
+        if (error) {
+            tempErrors.avatar = error;
+        }
+        else {
+            delete tempErrors.avatar;
+        }
+        setErrors(tempErrors);
+        if (Object.keys(tempErrors).length === 0) {
+            setFormData({ ...formData, avatar: file });
+        }
+    }
+
     return (
         <Stack height={"100%"} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1}>
             <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("my-profile")}</Typography>
             <Stack direction={"row"} alignItems={"center"} gap={2}>
-                <CustomAvatar src={formData?.avatar} alt={formData?.username} />
-                <CustomInput type={"file"} id={"avatar"} error={errors?.avatar} name={"avatar"} accept={"image/*"} onChange={(e) => { setFormData({ ...formData, avatar: e.target.files[0] }) }} />
+                <CustomAvatar src={formData?.avatar} alt={formData?.username} sx={{ width: 100, height: "auto", aspectRatio: 1 }} />
+                <CustomInput type={"file"} id={"avatar"} error={errors?.avatar} name={"avatar"} accept={"image/*"} onChange={handleFile} />
             </Stack>
             {isNewUser && <Alert severity="warning" >
                 {label("warning-message-user")}.

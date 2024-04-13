@@ -35,7 +35,7 @@ export default function Login() {
                 navigate('/dashboard');
             } catch (error) {
                 error.code === "auth/user-not-found" && setError({ ...error, email: "User not found" });
-                error.code === "auth/wrong-password" && setError({ ...error, password: "XXXXX password" });
+                error.code === "auth/wrong-password" && setError({ ...error, password: "Wrong password" });
             }
             finally {
                 setData((value) => { return { ...value, loading: false } });
