@@ -111,7 +111,7 @@ export default function Profile() {
         <Stack height={"100%"} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1}>
             <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("my-profile")}</Typography>
             <Stack direction={"row"} alignItems={"center"} gap={2}>
-                <CustomAvatar src={formData?.avatar} alt={formData?.username} sx={{ width: 100, height: "auto", aspectRatio: 1 }} />
+                <CustomAvatar profile={[data, setData]} src={formData?.avatar} alt={formData?.username} sx={{ width: 100, height: "auto", aspectRatio: 1 }} />
                 <CustomInput type={"file"} id={"avatar"} error={errors?.avatar} name={"avatar"} accept={"image/*"} onChange={handleFile} />
             </Stack>
             {isNewUser && <Alert severity="warning" >
