@@ -2,7 +2,7 @@ import { FormControl, FormHelperText, InputLabel, OutlinedInput, Typography } fr
 
 export const CustomInput = ({ error, ...props }) => {
     return (
-        <FormControl disabled={props?.disabled}>
+        <FormControl disabled={props?.disabled} fullWidth={props.fullWidth}>
             <InputLabel error={Boolean(error)} sx={{ ":first-letter": { textTransform: "uppercase" } }} >
                 {props.label}
             </InputLabel>
