@@ -24,11 +24,11 @@ export default function UserLinks() {
             <CssBaseline />
             <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} height={"100%"} gap={1} p={1}>
                 <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} py={2} gap={1} flex={0} >
-                    <CustomAvatar src={user.avatar} alt={user.username} sx={{ width: 80, height: "auto", aspectRatio: 1 }} />
-                    <Typography variant="h1" fontSize={45}>{user.username}</Typography>
+                    <CustomAvatar src={user?.avatar} alt={user?.username} sx={{ width: 80, height: "auto", aspectRatio: 1 }} />
+                    <Typography variant="h1" fontSize={45}>{user?.username}</Typography>
                     <Typography variant="body1" fontSize={16}>{user?.description}</Typography>
                     <Stack direction={"row"} gap={1} alignItems={"center"}>
-                        {Object.keys(user?.socialNetwork).map(item => {
+                        {user?.socialNetwork?.length > 0 && Object.keys(user?.socialNetwork)?.map(item => {
                             if (user?.socialNetwork[item]) {
                                 return <Link component={Button} variant='inherit' color={"rgb(0,0,0)"} key={item} href={ref.current[item][0] + user?.socialNetwork[item]} target="_blank" >{ref.current[item][1]}</Link>
                             }
@@ -48,16 +48,6 @@ export default function UserLinks() {
                 </Stack>
                 <Typography variant="h2" fontSize={12} fontStyle={"italic"} color={"GrayText"} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("footer-userlinks-message")} <Link component={RouterLink} to="/" >{label("here")}</Link> </Typography>
             </Stack>
-            {/* <Box component={Alert} icon={false} severity='warning' variant='standard' position={"fixed"} bottom={0} height={"auto"} fontSize={12} dipls action={
-                <Button color="inherit" size="small">
-                    understood
-                </Button>
-            }>
-                <AlertTitle>
-                    Accept user aggrement
-                </AlertTitle>
-                Clicking any links from here you're accepting user aggrement, more info <Link href='/legacy'>here</Link>
-            </Box> */}
         </Box>
     )
 }

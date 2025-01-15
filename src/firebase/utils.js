@@ -43,8 +43,8 @@ export const updateUser = async (data) => {
 }
 
 export const updateAvatarImage = async (image) => {
+    if (!image) return null
     const storage = getStorage(app);
-    console.log(image);
     const storageRef = ref(storage, `avatar/${auth.currentUser.uid}`);
     await uploadBytes(storageRef, image);
     return storageRef.fullPath;
