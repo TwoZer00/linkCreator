@@ -29,7 +29,7 @@ export default function UserLinks() {
                     <Typography variant="h1" fontSize={45}>{user?.username}</Typography>
                     <Typography variant="body1" fontSize={16}>{user?.description}</Typography>
                     <Stack direction={"row"} gap={1} alignItems={"center"}>
-                        {user?.socialNetwork?.length > 0 && Object.keys(user?.socialNetwork)?.map(item => {
+                        {Object.keys(user?.socialNetwork||[0])?.map(item => {
                             if (user?.socialNetwork[item]) {
                                 return <Link component={Button} variant='inherit' color={"rgb(0,0,0)"} key={item} href={ref.current[item][0] + user?.socialNetwork[item]} target="_blank" >{ref.current[item][1]}</Link>
                             }
@@ -63,30 +63,17 @@ export default function UserLinks() {
                 </Stack>
                 <Typography variant="h2" fontSize={12} fontStyle={"italic"} color={"GrayText"} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("footer-userlinks-message")} <Link component={RouterLink} to="/" >{label("here")}</Link> </Typography>
             </Stack>
-            <Warning />
+            {/* <Box component={Alert} icon={false} severity='warning' variant='standard' position={"fixed"} bottom={0} height={"auto"} fontSize={12} dipls action={
+                <Button color="inherit" size="small">
+                    understood
+                </Button>
+            }>
+                <AlertTitle>
+                    Accept user aggrement
+                </AlertTitle>
+                Clicking any links from here you're accepting user aggrement, more info <Link href='/legacy'>here</Link>
+            </Box> */}
         </Box>
-    )
-}
-
-
-const Warning = () => {
-    const [check, setCheck] = useState(true);
-    return (
-        <>
-            {check &&
-                <Box component={Alert} severity='warning' variant='standard' width={"100%"} position={"fixed"} bottom={0} left={0} height={"auto"} fontSize={12} action={
-                    <Button color="inherit" size="small" sx={{ my: "auto" }} onClick={() => { setCheck(false) }}>
-                        understood
-                    </Button>
-                }>
-                    <AlertTitle>
-                        Accept user aggrement
-                    </AlertTitle>
-                    By clicking on any link from here you are allowing the collection of information from your device (IP address, browser and any other necessary for analytics purposes).
-                </Box>
-            }
-
-        </>
     )
 }
 
