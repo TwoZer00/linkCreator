@@ -15,10 +15,10 @@ export default function CustomAvatar(props) {
             data && setData(value => { return { ...value, user: user } })
             !data && setAvatar(url);
         }
-        if (typeof (props.src) === "string" && props.src.split("/").includes("avatar")) {
+        if (props.src!=null && typeof (props.src) === "string" && props.src.split("/").includes("avatar")) {
             fetchAvatar();
         }
-        else {
+        else if(props.src!=null) {
             typeof props.src === "object" && setAvatar(URL.createObjectURL(props.src))
         }
     }, [props])

@@ -8,7 +8,7 @@ import { Navigate, redirect, useLoaderData, useNavigate, useOutletContext } from
 import CustomAvatar from '../../components/CustomAvatar';
 
 export default function Profile() {
-    const [formData, setFormData] = useState(useLoaderData());
+    const [formData, setFormData] = useState(useLoaderData({email:"",username:"",description:"",avatar:""}));
     const [isNewUser, setIsNewUser] = useState();
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
@@ -126,7 +126,7 @@ export default function Profile() {
             </Alert>}
             <CustomInput label={label("username")} id="username" name="username" value={formData?.username} error={errors?.username} onChange={(e) => { setFormData({ ...formData, username: e.target.value }) }} required />
             <CustomInput label={label("description")} id="description" multiline rows={3} name="description" value={formData?.description} onChange={(e) => { setFormData({ ...formData, description: e.target.value }) }} />
-            <CustomInput label={label("email")} id="email" name="email" value={formData?.email} disabled onChange={(e) => { setUssetFormDataerData({ ...formData, email: e.target.value }) }} readOnly />
+            <CustomInput label={label("email")} id="email" name="email" value={formData?.email} disabled readOnly />
             <Stack gap={2}>
                 <Typography variant="h3" fontSize={18} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("social-networks")}</Typography>
                 {Object.keys(socialNetwork).map((key) => {
