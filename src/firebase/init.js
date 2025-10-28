@@ -28,8 +28,8 @@ if (location.hostname === "localhost") {
     const auth = getAuth(app);
     const db = getFirestore(app);
     const storage = getStorage(app);
-    connectFirestoreEmulator(db, '192.168.0.103', 8080);
-    connectAuthEmulator(auth, "http://192.168.0.103:9099", { disableWarnings: true });
+    connectFirestoreEmulator(db, '192.168.0.130', 8080);
+    connectAuthEmulator(auth, "http://192.168.0.130:9099", { disableWarnings: true });
     // Point to the Storage emulator running on localhost.
-    connectStorageEmulator(storage, "192.168.0.103", 9199);
+    connectStorageEmulator(storage, "192.168.0.130", 9199);
 }

@@ -14,6 +14,7 @@ export function Home() {
     const [visits, setVisits] = useState({});
     const [countries, setCountries] = useState([]);
     const [data, setData] = useOutletContext();
+    const [devices, setDevices] = useState();
     useEffect(() => {
         const fetchLinksData = async () => {
             setData((value) => { return { ...value, loading: true } })
@@ -27,22 +28,105 @@ export function Home() {
                 arrProm.push(getVisitsOfLink(link.id))
             })
             const visits = data?.vists || await Promise.all(arrProm);
+            // const tempDevices={}
             const tempA = {}
             visits.forEach(({ id, visits }) => {
                 tempCounter += (visits.length || 0);
                 tempA[id] = visits;
+                
+                // tempDevices[id]={...visits.deviceInfo}
             })
             const tempCountiesCounter = {}
+            
             tempData.filter((link) => {
                 const visits = tempA[link.id];
+                // console.log(link);
+                
+                
+                // if(link.deviceInfo.isMobile){
+                //     devicesCounter.link = link.linkId
+                //     devicesCounter.mobile = (devicesCounter.mobile||0)+1
+                //     devicesCounter.deviceOS = link.deviceInfo.isAndroid ? "Android" : link.deviceInfo.isIOS ? "iOS" : "Unknown";
+                // }
+                // else{
+                //     devicesCounter.link = link.linkId
+                //     devicesCounter.desktop = (devicesCounter.desktop||0)+1
+                //     devicesCounter.deviceOS = link.deviceInfo.isWindows ? "Windows" : link.deviceInfo.isLinux ? "Linux" : link.deviceInfo.isMacOS ? "MacOS" : "Unknown";
+                // }
+                // console.log(visits);
+                
                 visits.filter((visit) => dayjs.unix(visit.creationTime.seconds).isSameOrAfter(dayjs().startOf('month'))).forEach((visit) => {
                     if (tempCountiesCounter[visit.country]) {
                         tempCountiesCounter[visit.country]++;
                     } else {
                         tempCountiesCounter[visit.country] = 1;
                     }
+                    // console.log(visit?.deviceInfo.isMobile);
+                    
+                    // if(visit?.deviceInfo.isMobile){
+                    //     devicesCounter.id = link.id;
+                    //     devicesCounter.mobile = {counter:(devicesCounter.mobile?.counter||0)+1,deviceOs:visit.deviceInfo.isAndroid ? "Android" : visit.deviceInfo.isIOS ? "iOS" : "Unknown"}
+                    
+                    //     // setDevices((value)=>{
+                    //     //     const temp = {...value};
+                    //     //     temp.mobile = (temp.mobile||0)+1;
+                    //     //     return temp;
+                    //     // });
+                    //     // if(visit?.deviceInfo.isAndroid){
+                    //     //     setDevices((value)=>{
+                    //     //     return value.android =(value.android||0)+1;
+                    //     // });
+                    //     // }
+                    //     // if(visit?.deviceInfo.isIOS){
+                    //     //     setDevices((value)=>{
+                    //     //     return value.ios =(value.ios||0)+1;
+                    //     // });
+                    //     // }
+                    // }
+                    // else{
+                    //     devicesCounter.id = link.id;
+                    //     devicesCounter.desktop = {counter:(devicesCounter.desktop?.counter||0)+1,deviceOs:visit.deviceInfo.isWindows ? "Windows" : visit.deviceInfo.isLinux ? "Linux" : visit.deviceInfo.isMacOS ? "MacOS" : "Unknown"}
+                    //     // setDevices((value)=>{
+                    //     //     const temp = {...value};
+                    //     //     temp.desktop = (temp.desktop||0)+1;
+                    //     //     return temp;
+                    //     // })
+                    //     // if(visit?.deviceInfo.isWindows){
+                    //     //     setDevices((value)=>{
+                    //     //         return value.windows =(value.windows||0)+1;
+                    //     //     }
+                    //     //     );
+                    //     // }
+                    //     // if(visit?.deviceInfo.isLinux){
+                    //     //     setDevices((value)=>{
+                    //     //         return value.linux =(value.linux||0)+1;
+                    //     //     });
+                    //     // }
+                    //     // if(visit?.deviceInfo.isMacOS){
+                    //     //     setDevices((value)=>{
+                    //     //         return value.macos =(value.macos||0)+1;
+                    //     //     }
+                    //     //     );
+                    //     // }
+
+                    // }
+                    
                 })
             })
+
+            // visits.forEach(({ visit }) => {
+
+            // });
+            // console.log(visits);
+            
+            
+            // console.log(tempData);
+            
+            // console.log(devicesCounter);
+            // const devicesCounter = 
+            // console.log(visits);
+            // setDevices();
+            // setDevices(devicesCounter);
             setCountries(Object.entries(tempCountiesCounter));
             setLinks(tempData);
             setVisits({ visits: { ...tempA }, total: tempCounter });
@@ -67,7 +151,7 @@ export function Home() {
                         <Typography variant="body1" fontSize={16}>{visits.total}</Typography>
                     </Box>
                 </Stack>
-                <Stack component={Paper} variant='outlined' height={200}>
+                <Stack component={Paper} variant='outlined' height={"fit-content"}>
                     <List
                         subheader={
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between", ":first-letter": { textTransform: 'uppercase' } }}><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("latest-links")}</Typography><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
@@ -87,7 +171,7 @@ export function Home() {
                         }
                     </List>
                 </Stack>
-                <Stack component={Paper} variant='outlined' height={200}>
+                <Stack component={Paper} variant='outlined'  height={"auto"}>
                     <List
                         subheader={
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("top-countries")} {label("last-month")}</Typography><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
@@ -111,6 +195,24 @@ export function Home() {
                         }
                     </List>
                 </Stack>
+                {/* <Stack component={Paper} variant='outlined'>
+                    <List
+                        subheader={
+                            <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("top-devices")} {label("last-month")}</Typography><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("devices")}</Typography></ListSubheader>
+                        }
+                        sx={{ pb: 8 }}
+                    >
+                        {devices.map((country) => {
+                            return (
+                                <ListItem key={country[0]}>
+                                    <ListItemText primary={label("desktop")} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{ maxWidth: "22ch", noWrap: true }} />
+                                    <ListItemText primary={devices.desktop || 0} sx={{ flexGrow: 0 }} primaryTypographyProps={{ width: "fit-content" }} />
+                                </ListItem>
+                            )
+                        })
+                        }
+                    </List>
+                </Stack> */}
             </Stack>
         </>
     )

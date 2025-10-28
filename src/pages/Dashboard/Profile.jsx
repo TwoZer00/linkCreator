@@ -1,7 +1,7 @@
 import { Alert, Box, Button, Stack, Typography } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { CustomInput } from '../../components/CustomInput'
-import { checkUsernameAvailability, createUser, getUser, updateUser } from '../../firebase/utils';
+import { checkUsernameAvailability, createUser, getUser, updateAvatarImage, updateUser } from '../../firebase/utils';
 import { getAuth, signOut } from 'firebase/auth';
 import { label } from '../../locales/locale';
 import { Navigate, redirect, useLoaderData, useNavigate, useOutletContext } from 'react-router-dom';
@@ -19,7 +19,7 @@ export default function Profile() {
             setData(value => { return { ...value, loading: true } })
             try {
                 const tempData = data?.user || await getUser();
-                setFormData(tempData);
+                setFormData({ ...tempData, avatar: undefined });
                 setSocialNetwork(tempData["socialNetwork"] || { youtube: "", facebook: "", x: "", linkedin: "", github: "", instagram: "", pinterest: "" });
                 setData(value => { return { ...value, user: tempData } })
             } catch (error) {
@@ -77,15 +77,18 @@ export default function Profile() {
                 delete tempUserData.email;
                 try {
                     const tempUser = await updateUser(tempUserData);
+                    console.log(tempUser);
                     setFormData({ ...formData, ...tempUser });
+                    setData(value => { return { ...value, user: { ...value.user, ...tempUser } } })
                 } catch (error) {
+                    console.log(error);
                     setErrors({ ...errors, global: error.message });
                 }
             }
         }
         setData(value => { return { ...value, loading: false } })
     }
-    const handleFile = (e) => {
+    const handleFile = async(e) => {
         const file = e.target.files[0];
         let error = "";
         if (file.size > 870400) {
@@ -103,7 +106,11 @@ export default function Profile() {
         }
         setErrors(tempErrors);
         if (Object.keys(tempErrors).length === 0) {
-            setFormData({ ...formData, avatar: file });
+            await updateAvatarImage(file)
+            setFormData(value => { return { ...value, avatar: file } })
+            setData(
+                value => { return { ...value, user: { ...value.user, avatar: `avatar/${getAuth().currentUser.uid}` } } }
+            )
         }
     }
 
@@ -111,7 +118,7 @@ export default function Profile() {
         <Stack height={"100%"} gap={2} component={"form"} noValidate onSubmit={handleSubmit} p={1}>
             <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("my-profile")}</Typography>
             <Stack direction={"row"} alignItems={"center"} gap={2}>
-                <CustomAvatar profile={[data, setData]} src={formData?.avatar} alt={formData?.username} sx={{ width: 100, height: "auto", aspectRatio: 1 }} />
+                <CustomAvatar profile={[data, setData]} src={formData?.avatar || data?.user?.avatar} alt={formData?.username} sx={{ width: 100, height: "auto", aspectRatio: 1 }} />
                 <CustomInput fullWidth type={"file"} id={"avatar"} error={errors?.avatar} name={"avatar"} accept={"image/*"} onChange={handleFile} />
             </Stack>
             {isNewUser && <Alert severity="warning" >

@@ -38,5 +38,9 @@
     "home-subtitle": "create links and share with your friends",
     "social-networks": "social networks",
     "personal-info": "personal info",
-    "description": "description"
+    "description": "description",
+    "devices": "devices",
+    "desktop": "desktop",
+    "mobile": "mobile",
+    "top-devices": "top devices"
 }

@@ -1,8 +1,9 @@
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { Timestamp, addDoc, arrayUnion, collection, doc, getDoc, getDocs, getFirestore, query, runTransaction, setDoc, updateDoc, where } from 'firebase/firestore';
+import { Timestamp, collection, doc, getDoc, getDocs, getFirestore, query, runTransaction, setDoc, updateDoc, where } from 'firebase/firestore';
 import { app } from '../firebase/init';
 import { UserAvailabilityError, UserNotFoundError } from "../errors/userAvailability";
-import { getStorage, ref, uploadBytes, uploadString } from 'firebase/storage';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { isAndroid, isDesktop, isIOS, isLinux, isMacOS, isMobile, isWindows } from "../utils/navigator";
 const auth = getAuth(app);
 const db = getFirestore(app);
 export const logEmailPassword = async (user) => {
@@ -37,17 +38,23 @@ export const createUser = async (data) => {
 
 export const updateUser = async (data) => {
     const userRef = doc(db, "user", auth.currentUser.uid);
-    const image = await updateAvatarImage(data.avatar);
-    await updateDoc(userRef, { ...data, lastModificationTime: Timestamp.fromDate(new Date()), avatar: image });
+    const dateTemp = { ...data, lastModificationTime: Timestamp.fromDate(new Date()) };
+    console.log(userRef.path,dateTemp);
+    delete dateTemp.avatar;
+    // const image = await updateAvatarImage(data.avatar);
+    // if (typeof data.avatar === "object")
+    //     dateTemp.avatar = image;
+    
+    await updateDoc(userRef, { ...dateTemp });
     return { ...data, id: userRef.id };
 }
 
 export const updateAvatarImage = async (image) => {
     const storage = getStorage(app);
-    console.log(image);
     const storageRef = ref(storage, `avatar/${auth.currentUser.uid}`);
     await uploadBytes(storageRef, image);
-    return storageRef.fullPath;
+    await updateDoc(doc(db, "user", auth.currentUser.uid), { avatar: storageRef.fullPath });
+    // return storageRef.fullPath;
 }
 
 export const setUserLink = async (data) => {
@@ -135,7 +142,8 @@ export const setLinkClickCounter = async (id) => {
     const visitCollection = collection(db, `user/${auth.currentUser.uid}/link/${id}/visit`);
     const visitRef = doc(visitCollection);
     const { location, ip } = await getLocationFromIp();
-    await setDoc(visitRef, { country: location, ip, creationTime: Timestamp.fromDate(new Date()), linkId: id })
+    const deviceInfo = { isMobile,isAndroid,isIOS,isDesktop,isWindows,isLinux,isMacOS }
+    await setDoc(visitRef, { country: location, ip, creationTime: Timestamp.fromDate(new Date()), linkId: id, deviceInfo });
 }
 export const getLocationFromIp = async () => {
     const ipResponse = await (await fetch("https://api.iplocation.net/?cmd=get-ip")).json();

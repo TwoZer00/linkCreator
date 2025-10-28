@@ -38,5 +38,9 @@
     "home-subtitle": "Crear links y compartelos con tus amigos",
     "social-networks": "redes sociales",
     "personal-info": "información personal",
-    "description": "descripción"
+    "description": "descripción",
+    "devices": "dispositivos",
+    "desktop": "escritorio",
+    "mobile": "móvil",
+    "top-devices": "principales dispositivos"
 }

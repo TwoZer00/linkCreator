@@ -1,17 +1,18 @@
-import { Alert, AlertTitle, Avatar, Box, Button, CssBaseline, Divider, Link, Paper, Stack, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, CssBaseline,Link, Paper, Stack, Typography } from '@mui/material';
 import { Facebook, GitHub, Instagram, LinkedIn, Pinterest, X, YouTube } from '@mui/icons-material/';
-import React, { useRef } from 'react'
-import { useLoaderData, useParams, Link as RouterLink, redirect } from 'react-router-dom'
-import { setLinkClickCounter } from '../firebase/utils';
+import React, { useRef, useState } from 'react'
+import { useLoaderData, useParams, Link as RouterLink } from 'react-router-dom'
+import {  setLinkClickCounter } from '../firebase/utils';
 import { label } from '../locales/locale';
 import CustomAvatar from '../components/CustomAvatar';
 
 export default function UserLinks() {
-    const user = useLoaderData();
+    const [user,setUser] = useState(useLoaderData());
+    const params = useParams();
     const ref = useRef({ youtube: ["https://youtube.com/@", <YouTube fontSize='large' />], facebook: ["https://facebook.com/", <Facebook fontSize='large' />], x: ["https://twitter.com/", <X fontSize='large' />], linkedin: ["https://linkedin/", <LinkedIn fontSize='large' />], github: ["https://github.com/", <GitHub fontSize='large' />], instagram: ["https://instagram.com/", <Instagram fontSize='large' />], pinterest: ["https://pinterest.com/", <Pinterest fontSize='large' />] })
-    const handleClick = async ({ link, id }) => {
+    const handleClick = ({ link, id }) => {
         try {
-            await setLinkClickCounter(id);
+            setLinkClickCounter(id);
         } catch (error) {
             console.error(error);
         }
@@ -36,11 +37,25 @@ export default function UserLinks() {
                     </Stack>
                 </Stack>
                 <Stack height={"100%"} width={"100%"} sx={{ overflowY: "auto" }} alignItems={"center"} gap={1} p={1}>
-                    {user.links.length > 0 ? user.links?.map((link) => {
-                        return (<Box key={link.id} width={"100%"} p={1} component={Paper} variant='outlined' square onClick={() => { handleClick(link) }}>
-                            <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
-                            <Typography variant="body1" fontSize={10}>{link.link}</Typography>
-                        </Box>)
+                    {user.links?.length > 0 ? user.links?.map((link) => {
+                        // return (<Link component="button" underline='none' color={"inherit"} key={link.id} width={"100%"} p={1} onClick={() => { handleClick(link) }}>
+                        //     <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
+                        //     <Typography variant="body1" fontSize={10}>{link.link}</Typography>
+                        // </Link>)
+                        // return (
+                        //     <LinkA component={Link} hover underline="none" key={link.id} width={"100%"} p={1} onClick={() => { handleClick(link) }}>
+                        //         <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
+                        //         <Typography variant="body1" fontSize={10}>{link.link}</Typography>
+                        //     </LinkA>
+                        // )
+                        return (
+                            <Button LinkComponent key={link.id} color='inherit' fullWidth variant='outlined' sx={{ fontWeight: 500, fontSize: 18, }} onClick={() => { handleClick(link) }}>
+                                {/* <Stack direction={"column"} alignItems={"center"} py={1}>
+                                    <Typography variant="h2" fontWeight={600} color={"inherit"} textTransform={"lowercase"} fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
+                                </Stack> */}
+                                {link.name}
+                            </Button>
+                        )
                     })
                         :
                         <Typography variant="h2" fontSize={18} fontStyle={"italic"} color={"GrayText"} sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("no-links")}</Typography>
@@ -48,16 +63,31 @@ export default function UserLinks() {
                 </Stack>
                 <Typography variant="h2" fontSize={12} fontStyle={"italic"} color={"GrayText"} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("footer-userlinks-message")} <Link component={RouterLink} to="/" >{label("here")}</Link> </Typography>
             </Stack>
-            {/* <Box component={Alert} icon={false} severity='warning' variant='standard' position={"fixed"} bottom={0} height={"auto"} fontSize={12} dipls action={
-                <Button color="inherit" size="small">
-                    understood
-                </Button>
-            }>
-                <AlertTitle>
-                    Accept user aggrement
-                </AlertTitle>
-                Clicking any links from here you're accepting user aggrement, more info <Link href='/legacy'>here</Link>
-            </Box> */}
+            <Warning />
         </Box>
     )
 }
+
+
+const Warning = () => {
+    const [check, setCheck] = useState(true);
+    return (
+        <>
+            {check &&
+                <Box component={Alert} severity='warning' variant='standard' width={"100%"} position={"fixed"} bottom={0} left={0} height={"auto"} fontSize={12} action={
+                    <Button color="inherit" size="small" sx={{ my: "auto" }} onClick={() => { setCheck(false) }}>
+                        understood
+                    </Button>
+                }>
+                    <AlertTitle>
+                        Accept user aggrement
+                    </AlertTitle>
+                    By clicking on any link from here you are allowing the collection of information from your device (IP address, browser and any other necessary for analytics purposes).
+                </Box>
+            }
+
+        </>
+    )
+}
+
+const LinkA = React.forwardRef((props, ref) => <Paper {...props} ref={ref} />);
