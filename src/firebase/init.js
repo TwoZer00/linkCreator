@@ -12,13 +12,13 @@ import { connectStorageEmulator, getStorage } from "firebase/storage";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY,
-    authDomain: "profiles-ed50e.firebaseapp.com",
-    databaseURL: "https://profiles-ed50e-default-rtdb.firebaseio.com",
-    projectId: "profiles-ed50e",
-    storageBucket: "profiles-ed50e.appspot.com",
-    messagingSenderId: "1096963073403",
-    appId: "1:1096963073403:web:a4ae39836dbeee34d689de",
-    measurementId: "G-KLGEC0359M"
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || process.env.VITE_FIREBASE_AUTH_DOMAIN,
+    databaseURL:  import.meta.env.VITE_FIREBASE_DATABASE_URL || process.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || process.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || process.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || process.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || process.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
