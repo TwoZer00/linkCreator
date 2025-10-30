@@ -8,7 +8,7 @@ import { Navigate, redirect, useLoaderData, useNavigate, useOutletContext } from
 import CustomAvatar from '../../components/CustomAvatar';
 
 export default function Profile() {
-    const [formData, setFormData] = useState(useLoaderData({email:"",username:"",description:"",avatar:""}));
+    const [formData, setFormData] = useState(useLoaderData()||{email:"",username:"",description:"",avatar:""});
     const [isNewUser, setIsNewUser] = useState();
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();

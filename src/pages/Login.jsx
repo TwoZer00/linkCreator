@@ -2,8 +2,9 @@ import { ThemeProvider } from '@emotion/react';
 import { Backdrop, Box, Button, CssBaseline, FormControl, FormHelperText, InputLabel, LinearProgress, Link, Modal, OutlinedInput, Stack, Typography, createTheme } from '@mui/material';
 import React, { useState } from 'react';
 import { Link as LinkRouterDom, useNavigate, useOutletContext } from 'react-router-dom';
-import { logEmailPassword } from '../firebase/utils';
+import { getUserFromId, logEmailPassword } from '../firebase/utils';
 import { label } from '../locales/locale';
+import { getAuth } from 'firebase/auth';
 
 export default function Login() {
     const theme = createTheme();
@@ -32,7 +33,7 @@ export default function Login() {
         if (form.checkValidity()) {
             try {
                 await logEmailPassword(userLogin);
-                navigate('/dashboard');
+                navigate('/dashboard', { replace: true });
             } catch (error) {
                 error.code === "auth/user-not-found" && setError({ ...error, email: "User not found" });
                 error.code === "auth/wrong-password" && setError({ ...error, password: "Wrong password" });

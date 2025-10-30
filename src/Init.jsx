@@ -1,9 +1,18 @@
 import { Backdrop, LinearProgress, Stack } from '@mui/material'
-import React, { useState } from 'react'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import{ useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 
 export default function Init() {
     const [data, setData] = useState({})
+    useEffect(() => {
+        onAuthStateChanged(getAuth(), (user) => {
+            if (!user) {
+                setData({})
+            }
+        })
+        return () => { }
+    },[])
     return (
         <>
             <Stack direction={'column'} width={"100dvw"} height={"100dvh"} maxWidth={"lg"} mx={"auto"}>

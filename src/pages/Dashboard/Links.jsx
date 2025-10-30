@@ -24,9 +24,10 @@ export default function Links() {
     const [data, setData] = useOutletContext();
     useEffect(() => {
         const fetchLinks = async () => {
+            setData((value) => { return { ...value, loading: true } });
             const tempData = data?.links || await getUserLinks();
             setLinks(tempData);
-            setData((value) => { return { ...value, userLinks: tempData } });
+            setData((value) => { return { ...value, userLinks: tempData,loading:false } });
         }
         fetchLinks();
     }, []);

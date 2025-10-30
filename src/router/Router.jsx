@@ -51,7 +51,8 @@ export const router = createBrowserRouter([
                         const userData = await getUser();
                         return userData;
                     } catch (error) {
-                        return { username: "", email: getAuth().currentUser.email }
+                        const userData = { username: "", email: getAuth().currentUser.email } 
+                        return userData;
                     }
                 },
                 children: [
