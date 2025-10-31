@@ -1,9 +1,10 @@
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { Timestamp, collection, doc, getDoc, getDocs, getFirestore, query, runTransaction, setDoc, updateDoc, where } from 'firebase/firestore';
+import { Timestamp, Transaction, collection, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, runTransaction, setDoc, updateDoc, where } from 'firebase/firestore';
 import { app } from '../firebase/init';
 import { UserAvailabilityError, UserNotFoundError } from "../errors/userAvailability";
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
-import { isAndroid, isDesktop, isIOS, isLinux, isMacOS, isMobile, isWindows } from "../utils/navigator";
+import { getDeviceInfo, isAndroid, isDesktop, isIOS, isLinux, isMacOS, isMobile, isWindows } from "../utils/navigator";
+import dayjs from "dayjs";
 const auth = getAuth(app);
 const db = getFirestore(app);
 export const logEmailPassword = async (user) => {
@@ -67,7 +68,12 @@ export const setUserLink = async (data) => {
         if (!userDoc.exists()) {
             throw new UserNotFoundError("auth-custom/user-not-found");
         }
-        transaction.set(linkRef, { ...data, visit: [] });
+        transaction.set(linkRef, data);
+        const links = {
+            ...(userDoc.data().links || {}),
+            total: (userDoc.data().links?.total || 0) + 1
+        }
+        transaction.update(userRef, { links });
     })
     return { ...data, id: linkRef.id };
 }
@@ -96,6 +102,38 @@ export const deleteUserLink = async (id) => {
         if (!userDoc.exists()) {
             throw new UserNotFoundError("auth-custom/user-not-found");
         }
+        const linkDoc = await transaction.get(linkRef);
+        const visits = {
+            ...(userDoc.data().links?.visits || {}),
+            total: (userDoc.data().links?.visits?.total||0) - (linkDoc.data()?.visits?.total || 0),
+        }
+        visits.byCountry = [...(userDoc.data().links?.visits?.byCountry || [])];
+        if (linkDoc.data()?.visits?.byCountry) {
+            linkDoc.data().visits.byCountry.forEach((countryVisit) => {
+                visits.byCountry = visits.byCountry.map(item => {
+                    if (item.country === countryVisit.country) {
+                        return { country: item.country, count: item.count - countryVisit.count };
+                    }
+                    return item;
+                });
+            });
+        }
+        visits.byDevice = [...(userDoc.data().links?.visits?.byDevice || [])];
+        if (linkDoc.data()?.visits?.byDevice) {
+            linkDoc.data().visits.byDevice.forEach((deviceVisit) => {
+                visits.byDevice = visits.byDevice.map(item => {
+                    if (item.device === deviceVisit.device) {
+                        return { device: item.device, count: item.count - deviceVisit.count };
+                    }
+                    return item;
+                });
+            });
+        }
+        transaction.update(userRef, { links: {
+                ...(userDoc.data().links || {}),
+                visits,
+                total: (userDoc.data().links?.total || 1) - 1
+            } });
         transaction.delete(linkRef);
     })
 }
@@ -103,6 +141,13 @@ export const deleteUserLink = async (id) => {
 export const getUserLinks = async ({ id } = {}) => {
     const linkCollection = collection(db, `user/${id || auth.currentUser.uid}/link`);
     const querySnapshot = await getDocs(linkCollection);
+    return querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+}
+
+export const getUserLinksOfLastMonth = async ({ id } = {}) => {
+    const linkCollection = collection(db, `user/${id || auth.currentUser.uid}/link`);
+    const q = query(linkCollection, where("creationTime", ">=", Timestamp.fromDate(dayjs().startOf('month').toDate())));
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 }
 
@@ -117,7 +162,7 @@ export const getUser = async () => {
     }
 }
 export const getUserFromId = async (id) => {
-    const userRef = doc(db, "user", id);
+    const userRef = doc(db, "user",id);
     const userDoc = await getDoc(userRef);
     if (!userDoc.exists()) {
         throw new UserNotFoundError("user does not exist", "auth-custom/user-not-found");
@@ -143,8 +188,70 @@ export const setLinkClickCounter = async (id) => {
     const visitCollection = collection(db, `user/${auth.currentUser.uid}/link/${id}/visit`);
     const visitRef = doc(visitCollection);
     const { location, ip } = await getLocationFromIp();
-    const deviceInfo = { isMobile,isAndroid,isIOS,isDesktop,isWindows,isLinux,isMacOS }
-    await setDoc(visitRef, { country: location, ip, creationTime: Timestamp.fromDate(new Date()), linkId: id, deviceInfo });
+    await runTransaction(db, async (transaction) => {
+        const counter = await transaction.get(doc(db, `user/${auth.currentUser.uid}/link`, id));
+        const linksData = (await transaction.get(doc(db, "user", auth.currentUser.uid))).data().links;
+        if (!counter.exists()) {
+            throw new Error("Link does not exist");
+        }
+        transaction.set(visitRef, { country: location, ip, creationTime: Timestamp.fromDate(new Date()), linkId: id, deviceInfo:getDeviceInfo() });
+        const visits = counter.data()?.visits||{ total: 0, byCountry: [],byDevice: [] };
+        visits.total = (visits.total || 0) + 1;
+        if (visits.byCountry.some(item => item.country === location)) {
+            visits.byCountry = visits.byCountry.map(item => {
+                if (item.country === location) {
+                    return { country: item.country, count: item.count + 1,creationTime: new Date()};
+                }
+                return item;
+            });
+        }
+        else {
+            visits.byCountry.push({ country: location, count: 1 ,creationTime: new Date()});
+        }
+        const device = isMobile ? (isAndroid ? "Android" : isIOS ? "iOS" : "Other Mobile") : (isDesktop ? (isWindows ? "Windows" : isMacOS ? "macOS" : isLinux ? "Linux" : "Other Desktop") : "Unknown");
+        if (visits.byDevice.some(item => item.device === device)) {
+            visits.byDevice = visits.byDevice.map(item => {
+                if (item.device === device) {
+                    return { device: item.device, count: item.count + 1,creationTime: new Date() };
+                }
+                return item;
+            });
+        }
+        else {
+            visits.byDevice.push({ device: device, count: 1,creationTime: new Date() });
+        }
+        transaction.update(doc(db, `user/${auth.currentUser.uid}/link`, id), {visits});
+        const totalVisits = {
+            ...(linksData.visits || {}),
+            total: (linksData.visits?.total || 0) + 1
+        }
+        totalVisits.byCountry = [...(linksData.visits?.byCountry || [])];
+        if (totalVisits.byCountry.some(item => item.country === location)) {
+            totalVisits.byCountry = totalVisits.byCountry.map(item => {
+                if (item.country === location) {
+                    return { country: item.country, count: item.count + 1};
+                }
+                return item;
+            });
+        }
+        else {
+            totalVisits.byCountry.push({ country: location, count: 1 });
+        }
+        totalVisits.byDevice = [...(linksData.visits?.byDevice || [])];
+        if (totalVisits.byDevice.some(item => item.device === device)) {
+            totalVisits.byDevice = totalVisits.byDevice.map(item => {
+                if (item.device === device) {
+                    return { device: item.device, count: item.count + 1};
+                }
+                return item;
+            });
+        }
+        else {
+            totalVisits.byDevice.push({ device: device, count: 1});
+        }
+        transaction.update(doc(db, "user", auth.currentUser.uid), { links: { ...linksData, visits: totalVisits }
+    });
+    })
 }
 export const getLocationFromIp = async () => {
     const ipResponse = await (await fetch("https://api.iplocation.net/?cmd=get-ip")).json();

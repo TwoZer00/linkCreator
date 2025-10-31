@@ -38,14 +38,42 @@ export default function Links() {
     const handleDelete = async ({ id }) => {
         setData(value => { return { ...value, loading: true } })
         const newLinks = links.filter((link) => link.id !== id);
+        const newvisits = data.user.links.visits || { total: 0, byCountry: [], byDevice: [] };
+        const linkToDelete = links.find((link) => link.id === id);
+        if (linkToDelete?.visits) {
+            newvisits.total -= linkToDelete.visits.total || 0;
+            // Adjust byCountry
+            linkToDelete.visits.byCountry?.forEach((countryVisit) => {
+                const existingCountry = newvisits.byCountry.find(item => item.country === countryVisit.country);
+                if (existingCountry) {
+                    existingCountry.count -= countryVisit.count;
+                    if (existingCountry.count <= 0) {
+                        newvisits.byCountry = newvisits.byCountry.filter(item => item.country !== countryVisit.country);
+                    }
+                }
+            });
+            // Adjust byDevice
+            linkToDelete.visits.byDevice?.forEach((deviceVisit) => {
+                const existingDevice = newvisits.byDevice.find(item => item.device === deviceVisit.device);
+                if (existingDevice) {
+                    existingDevice.count -= deviceVisit.count;
+                    if (existingDevice.count <= 0) {
+                        newvisits.byDevice = newvisits.byDevice.filter(item => item.device !== deviceVisit.device);
+                    }
+                }
+            });
+        }
         setLinks(newLinks);
         await deleteUserLink(id);
-        setData((value) => { return { ...value, userLinks: newLinks, loading: false } });
+        setData(
+            (value)=>{
+                return {...value, userLinks: newLinks, user:{...value.user,links:{...value.user.links,visits:value.user.links.visits,total:(value.user.links.total||0)-1}},loading:false}
+            }
+        )
     }
     return (
         <>
-            <CssBaseline />
-            <Stack direction={"column"} height={"100%"} position={"relative"} p={1} gap={2} pb={8}>
+            <Stack direction={"column"} maxHeight={"100%"} p={1} gap={2} pb={8}>
                 <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links")}</Typography>
                 <Typography variant="h3" fontSize={16} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links-subtitle")}</Typography>
                 <InputLink links={links} setLinks={setLinks} selectedLink={link} setSelectedLink={setLink} />
@@ -54,11 +82,9 @@ export default function Links() {
         </>
     )
 }
-
-
 const LinksList = ({ dataList, ...props }) => {
     return (
-        <>
+        <Box flex={1} height={"100%"} overflow={"auto"} display={"flex"} flexDirection={"column"} gap={2} >
             {
                 dataList?.map((link, index) => {
                     return (
@@ -66,7 +92,7 @@ const LinksList = ({ dataList, ...props }) => {
                     )
                 })
             }
-        </>
+        </Box>
     )
 }
 const LinkElement = ({ link, ...props }) => {

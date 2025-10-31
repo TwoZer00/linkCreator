@@ -6,3 +6,15 @@ export const isDesktop = !isMobile;
 export const isWindows = /Win/i.test(navigator.userAgent);
 export const isMacOS = /Mac/i.test(navigator.userAgent);
 export const isLinux = /Linux/i.test(navigator.userAgent);
+export const getDeviceInfo = () => {
+    return {
+        isMobile,
+        isAndroid,
+        isIOS,
+        isDesktop,
+        isWindows,
+        isLinux,
+        isMacOS,
+        device: navigator.userAgent,
+    }
+}

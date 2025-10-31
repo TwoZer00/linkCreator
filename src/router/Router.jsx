@@ -40,20 +40,15 @@ export const router = createBrowserRouter([
                 }
             },
             {
-                path: 'dashboard',
+                path: 'dashboard/',
                 element: <Dashboard />,
+                id: 'dashboard',
                 loader: async () => {
                     await getAuth().authStateReady();
                     if (getAuth().currentUser === null) {
                         return redirect('/login');
                     }
-                    try {
-                        const userData = await getUser();
-                        return userData;
-                    } catch (error) {
-                        const userData = { username: "", email: getAuth().currentUser.email } 
-                        return userData;
-                    }
+                    return false
                 },
                 children: [
                     {
@@ -63,19 +58,12 @@ export const router = createBrowserRouter([
                     {
                         path: 'profile',
                         element: <Profile />,
-                        // loader: async () => {
-                        //     await getAuth().authStateReady();
-                        //     try {
-                        //         const userData = await getUser();
-                        //         return userData;
-                        //     } catch (error) {
-                        //         return { username: "", email: getAuth().currentUser.email }
-                        //     }
-                        // }
                     },
                     {
                         path: '',
-                        element: <HomeDashboard />
+                        element: <HomeDashboard />,
+                        index: true,
+
                     }
 
                 ]
