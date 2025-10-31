@@ -1,15 +1,13 @@
-import { ThemeProvider } from '@emotion/react';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, Button, CssBaseline, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, Stack, Typography, createTheme } from '@mui/material';
-import React, { useState } from 'react';
-import { useNavigate, Link as LinkRouterDom, useOutlet, useOutletContext } from 'react-router-dom';
+import { ArrowBack, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, Button, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, Stack, Typography} from '@mui/material';
+import  { useState } from 'react';
+import { useNavigate, Link as LinkRouterDom, useOutletContext } from 'react-router-dom';
 import { registerEmailPassword } from '../firebase/utils';
-import { CustomInput } from './Login';
+import { BackButton, CustomInput } from './Login';
 import { label } from '../locales/locale'
 
 
 export default function Register() {
-    const theme = createTheme();
     const [error, setError] = useState();
     const navigate = useNavigate();
     const [data, setData] = useOutletContext();
@@ -59,23 +57,25 @@ export default function Register() {
         }
     }
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Stack component={"form"} gap={2} onSubmit={handleSubmit} height={"100dvh"} width={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
-                <Box textAlign={"center"}>
-                    <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("register")}</Typography>
-                    <Typography variant="caption" sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("register-subtitle")}</Typography>
-                </Box>
-                <CustomInput id={"email"} label={label("email")} required type={"email"} error={error?.email} autoComplete="email" name="email" autoFocus={true} />
-                <CustomInput id={"username"} label={label("username")} required type={"text"} error={error?.username} autoComplete="username" name="username" />
-                <PasswordInput error={{ confirmPassword: error?.confirmPassword, password: error?.password }} />
-                <Button variant='contained' type='submit' fullWidth >
-                    {label("register")}
-                </Button>
-                <Link component={LinkRouterDom} to={'/login'} variant='body1' textAlign={"center"} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("login-here")}</Link>
-                {Boolean(error?.other) && <FormHelperText error={true} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{error?.other}</FormHelperText>}
+        <>
+            <Box>
+                <BackButton/>
+            </Box>
+            <Stack maxWidth={"sm"} mx={"auto"} component={"form"} gap={2} onSubmit={handleSubmit} height={"100dvh"} width={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
+                    <Box textAlign={"center"}>
+                        <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("register")}</Typography>
+                        <Typography variant="subtitle1" fontSize={14} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("register-subtitle")}</Typography>
+                    </Box>
+                    <CustomInput id={"email"} label={label("email")} required type={"email"} error={error?.email} autoComplete="email" name="email" autoFocus={true} />
+                    <CustomInput id={"username"} label={label("username")} required type={"text"} error={error?.username} autoComplete="username" name="username" />
+                    <PasswordInput error={{ confirmPassword: error?.confirmPassword, password: error?.password }} />
+                    <Button variant='contained' type='submit' fullWidth >
+                        {label("register")}
+                    </Button>
+                    <Link component={LinkRouterDom} to={'/login'} replace variant='body1' textAlign={"center"} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("login-here")}</Link>
+                    {Boolean(error?.other) && <FormHelperText error={true} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{error?.other}</FormHelperText>}
             </Stack>
-        </ThemeProvider>
+        </>
     )
 }
 

@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Box, Button, CssBaseline,Link, Paper, Stack, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Button,Link, Paper, Stack, Typography } from '@mui/material';
 import { Facebook, GitHub, Instagram, LinkedIn, Pinterest, X, YouTube } from '@mui/icons-material/';
 import React, { useRef, useState } from 'react'
 import { useLoaderData, useParams, Link as RouterLink } from 'react-router-dom'
@@ -21,8 +21,7 @@ export default function UserLinks() {
         }
     }
     return (
-        <Box height={"100%"}>
-            <CssBaseline />
+        <Box width={"100%"} height={"100%"}>
             <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} height={"100%"} gap={1} p={1}>
                 <Stack direction="column" justifyContent="center" alignItems="center" width={"100%"} py={2} gap={1} flex={0} >
                     <CustomAvatar src={user?.avatar} alt={user?.username} sx={{ width: 80, height: "auto", aspectRatio: 1 }} />
@@ -36,23 +35,10 @@ export default function UserLinks() {
                         })}
                     </Stack>
                 </Stack>
-                <Stack height={"100%"} width={"100%"} sx={{ overflowY: "auto" }} alignItems={"center"} gap={1} p={1}>
+                <Stack height={"100%"} maxWidth={"md"} width={"100%"} sx={{ overflowY: "auto" }} alignItems={"center"} gap={1} p={1}>
                     {user.links?.length > 0 ? user.links?.map((link) => {
-                        // return (<Link component="button" underline='none' color={"inherit"} key={link.id} width={"100%"} p={1} onClick={() => { handleClick(link) }}>
-                        //     <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
-                        //     <Typography variant="body1" fontSize={10}>{link.link}</Typography>
-                        // </Link>)
-                        // return (
-                        //     <LinkA component={Link} hover underline="none" key={link.id} width={"100%"} p={1} onClick={() => { handleClick(link) }}>
-                        //         <Typography variant="h2" fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
-                        //         <Typography variant="body1" fontSize={10}>{link.link}</Typography>
-                        //     </LinkA>
-                        // )
                         return (
                             <Button LinkComponent key={link.id} color='inherit' fullWidth variant='outlined' sx={{ fontWeight: 500, fontSize: 18, }} onClick={() => { handleClick(link) }}>
-                                {/* <Stack direction={"column"} alignItems={"center"} py={1}>
-                                    <Typography variant="h2" fontWeight={600} color={"inherit"} textTransform={"lowercase"} fontSize={22} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
-                                </Stack> */}
                                 {link.name}
                             </Button>
                         )

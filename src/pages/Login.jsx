@@ -1,17 +1,14 @@
-import { ThemeProvider } from '@emotion/react';
-import { Backdrop, Box, Button, CssBaseline, FormControl, FormHelperText, InputLabel, LinearProgress, Link, Modal, OutlinedInput, Stack, Typography, createTheme } from '@mui/material';
-import React, { useState } from 'react';
-import { Link as LinkRouterDom, useNavigate, useOutletContext } from 'react-router-dom';
-import { getUserFromId, logEmailPassword } from '../firebase/utils';
+import { Box, Button, FormControl, FormHelperText, IconButton, InputLabel, Link, OutlinedInput, Stack, Typography, createTheme } from '@mui/material';
+import  { useState } from 'react';
+import { Link as LinkRouterDom, redirect, useNavigate, useNavigation, useOutletContext } from 'react-router-dom';
+import { logEmailPassword } from '../firebase/utils';
 import { label } from '../locales/locale';
-import { getAuth } from 'firebase/auth';
+import { ArrowBack } from '@mui/icons-material';
 
 export default function Login() {
-    const theme = createTheme();
     const [error, setError] = useState();
     const navigate = useNavigate();
     const [data, setData] = useOutletContext();
-    const [loading, setLoading] = useState(false);
     const handleSubmit = async (event) => {
         event.preventDefault();
         setData((value) => { return { ...value, loading: true } });
@@ -46,20 +43,23 @@ export default function Login() {
             setData((value) => { return { ...value, loading: false } });
         }
     }
+    
     return (
-        <ThemeProvider theme={theme} >
-            <CssBaseline />
-            <Stack gap={2} component={"form"} onSubmit={handleSubmit} noValidate width={"100%"} height={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
+        <>
+            <Box>
+                <BackButton/>
+            </Box>
+            <Stack maxWidth={"sm"} mx={"auto"} gap={2} component={"form"} onSubmit={handleSubmit} noValidate width={"100%"} height={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"}>
-                    <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("login-opt")}</Typography>
-                    <Typography variant="caption" sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("login-subtitle")}</Typography>
+                    <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" },textTransform:"uppercase" }}>{label("login-opt")}</Typography>
+                    <Typography variant="subtitle1" fontSize={14} sx={{ ":first-letter":{textTransform:"uppercase"} }} >{label("login-subtitle")}</Typography>
                 </Box>
                 <CustomInput id="email" label={label("email")} name="email" type="email" error={error?.email} required autoComplete="email" autoFocus={true} />
                 <CustomInput id="password" label={label("password")} name="password" type="password" error={error?.password} required autoComplete="current-password" />
                 <Button variant="contained" type="submit" fullWidth >{label("login")}</Button>
-                <Link component={LinkRouterDom} to={"/register"} variant='body1' textAlign={"center"} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("register-here")}</Link>
+                <Link component={LinkRouterDom} to={"/register"} replace variant='body1' textAlign={"center"} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("register-here")}</Link>
             </Stack>
-        </ThemeProvider>
+        </>
     )
 }
 
@@ -79,3 +79,15 @@ export const CustomInput = ({ id, label, error, ...props }) => {
         </>
     )
 }
+
+export const BackButton = ()=>{
+    const navigate = useNavigate();
+    const handleBackButton = ()=>{
+        navigate(-1)
+    }
+    return (
+        <IconButton onClick={handleBackButton} >
+            <ArrowBack/>
+        </IconButton>
+    )
+} 
