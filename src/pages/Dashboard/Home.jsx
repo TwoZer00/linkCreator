@@ -58,7 +58,7 @@ export function Home() {
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("top-countries")}</Typography><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
                         }
                     >
-                        {data.user?.links.visits?.byCountry?.filter(item=>item.count>0).length > 0 ? data.user?.links.visits?.byCountry?.slice(0,4).map((country) => {
+                        {data.user?.links?.visits?.byCountry?.filter(item=>item.count>0).length > 0 ? data.user?.links?.visits?.byCountry?.slice(0,4).map((country) => {
                             return (
                                 <ListItem key={country.country}>
                                     <ListItemText primary={isoAlphaCode2ToCountries[country.country]} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{ maxWidth: "22ch", noWrap: true }} />
