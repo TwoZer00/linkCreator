@@ -37,7 +37,7 @@ export function Home() {
                         subheader={
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between", ":first-letter": { textTransform: 'uppercase' } }}><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("latest-links")}</Typography><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
                         }>
-                        {links.length > 0 ? links.map((link) => {
+                        {links?.length > 0 ? links?.map((link) => {
                             return (
                                 <ListItem key={link.id}>
                                     <ListItemText primary={link.name} secondary={link.link} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{ maxWidth: "22ch", noWrap: true }} />
@@ -85,7 +85,7 @@ export function Home() {
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between" }}><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("top-devices")}</Typography><Typography variant='inherit' sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("devices")}</Typography></ListSubheader>
                         }
                     >
-                        {data.user?.links.visits?.byDevice?.filter(item=>item.count>0).length>0?data.user?.links.visits?.byDevice?.slice(0,4).map((item) => {
+                        {data.user?.links?.visits?.byDevice?.filter(item=>item.count>0).length>0?data.user?.links?.visits?.byDevice?.slice(0,4).map((item) => {
                             return (
                                 <ListItem key={item.device}>
                                     <ListItemText primary={item.device} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{ maxWidth: "22ch", noWrap: true }} />
