@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import { Alert, Box, Button, CssBaseline, FormControl, FormHelperText, IconButton, InputLabel, OutlinedInput, Paper, Snackbar, Stack } from '@mui/material'
+import { Alert, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, IconButton, InputLabel, OutlinedInput, Paper, Snackbar, Stack } from '@mui/material'
 import { deleteUserLink, getUserLinks, setUserLink, updateUserLink } from '../../firebase/utils';
 import { CustomInput } from '../../components/CustomInput';
 import { label } from '../../locales/locale'
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Close, Delete } from '@mui/icons-material';
+import { Close, Delete, Edit } from '@mui/icons-material';
 
 const style = {
     position: 'absolute',
@@ -23,14 +23,8 @@ export default function Links() {
     const [link, setLink] = useState();
     const [data, setData] = useOutletContext();
     useEffect(() => {
-        const fetchLinks = async () => {
-            setData((value) => { return { ...value, loading: true } });
-            const tempData = data?.links || await getUserLinks();
-            setLinks(tempData);
-            setData((value) => { return { ...value, userLinks: tempData,loading:false } });
-        }
-        fetchLinks();
-    }, []);
+        setLinks(data.userLinks || []);
+    }, [data.userLinks]);
 
     const handleClick = ({ id }) => {
         setLink(links.find((link) => link.id === id));
@@ -76,17 +70,29 @@ export default function Links() {
             <Stack direction={"column"} maxHeight={"100%"} p={1} gap={2} pb={8}>
                 <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links")}</Typography>
                 <Typography variant="h3" fontSize={16} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links-subtitle")}</Typography>
-                <InputLink links={links} setLinks={setLinks} selectedLink={link} setSelectedLink={setLink} />
-                <LinksList onClick={handleClick} deleteAction={handleDelete} dataList={links} />
+                <InputLink />
+                <LinksList onClick={handleClick} deleteAction={handleDelete} />
             </Stack>
         </>
     )
 }
-const LinksList = ({ dataList, ...props }) => {
+const LinksList = ({ ...props }) => {
+    const [links,setLinks ]=useState([]);
+    const [data, setData] = useOutletContext();
+    useEffect(() => {
+        const fetchLinks = async () => {
+            setData((value) => { return { ...value, loading: true } });
+            const tempData = data?.userLinks || await getUserLinks();
+            setLinks(tempData);
+            setData((value) => { return { ...value, userLinks: tempData, loading: false } });
+        }
+
+        fetchLinks();
+    })
     return (
         <Box flex={1} height={"100%"} overflow={"auto"} display={"flex"} flexDirection={"column"} gap={2} >
             {
-                dataList?.map((link, index) => {
+                links?.map((link, index) => {
                     return (
                         <LinkElement link={link} key={"index" + index} {...props} />
                     )
@@ -96,21 +102,97 @@ const LinksList = ({ dataList, ...props }) => {
     )
 }
 const LinkElement = ({ link, ...props }) => {
+    const [modal,setModal] = useState({edit:false,delete:false});
     return (
-        <Paper variant='outlined' component={Stack} p={1} direction={"row"} >
-            <Box flex={1} onClick={() => { props.onClick(link) }} >
-                <Typography variant="h2" fontSize={18} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
-                <Typography variant="h3" fontSize={12}>{link.link}</Typography>
-            </Box>
-            <IconButton onClick={() => { props.deleteAction(link) }} >
-                <Delete />
-            </IconButton>
-        </Paper>
+        <>
+            <Paper variant='outlined' component={Stack} p={1} direction={"row"} >
+                <Box flex={1} onClick={() => { props.onClick(link) }} >
+                    <Typography variant="h2" fontSize={18} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{link.name}</Typography>
+                    <Typography variant="h3" fontSize={12}>{link.link}</Typography>
+                </Box>
+                <IconButton onClick={() => { setModal(value => ({...value,delete:true})) }} >
+                    <Delete />
+                </IconButton>
+                <IconButton onClick={() => { setModal((value)=>({...value, edit:true})) }} >
+                    <Edit />
+                </IconButton>
+            </Paper>
+            <DeleteLink open={modal.delete} setOpen={setModal} link={link}/>
+            <EditLink open={modal.edit} setOpen={setModal} link={link} />
+        </>
     )
 }
-const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
+const EditLink = ({ open, setOpen, link }) => {
+    return (
+        <Dialog open={open} onClose={() => { setOpen(value=>({...value, edit:false})) }}>
+            <DialogTitle sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("edit-link")}</DialogTitle>
+            <DialogContent>
+                <Box p={2}>
+                    <InputLink updatedLink={[link,setOpen]}   />
+                </Box>
+            </DialogContent>
+        </Dialog>
+    )
+
+}
+const DeleteLink = ({ open, setOpen, link }) => {
+    const handleDelete = async ({ id }) => {
+        setData(value => { return { ...value, loading: true } })
+        const newLinks = links.filter((link) => link.id !== id);
+        const newvisits = data.user.links.visits || { total: 0, byCountry: [], byDevice: [] };
+        const linkToDelete = links.find((link) => link.id === id);
+        if (linkToDelete?.visits) {
+            newvisits.total -= linkToDelete.visits.total || 0;
+            // Adjust byCountry
+            linkToDelete.visits.byCountry?.forEach((countryVisit) => {
+                const existingCountry = newvisits.byCountry.find(item => item.country === countryVisit.country);
+                if (existingCountry) {
+                    existingCountry.count -= countryVisit.count;
+                    if (existingCountry.count <= 0) {
+                        newvisits.byCountry = newvisits.byCountry.filter(item => item.country !== countryVisit.country);
+                    }
+                }
+            });
+            // Adjust byDevice
+            linkToDelete.visits.byDevice?.forEach((deviceVisit) => {
+                const existingDevice = newvisits.byDevice.find(item => item.device === deviceVisit.device);
+                if (existingDevice) {
+                    existingDevice.count -= deviceVisit.count;
+                    if (existingDevice.count <= 0) {
+                        newvisits.byDevice = newvisits.byDevice.filter(item => item.device !== deviceVisit.device);
+                    }
+                }
+            });
+        }
+        setLinks(newLinks);
+        await deleteUserLink(id);
+        setData(
+            (value)=>{
+                return {...value, userLinks: newLinks, user:{...value.user,links:{...value.user.links,visits:value.user.links.visits,total:(value.user.links.total||0)-1}},loading:false}
+            }
+        )
+    }
+    return (
+        <Dialog open={open} onClose={() => { setOpen(value=>({...value, delete:false})) }}>
+            <DialogTitle sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("delete-link")}</DialogTitle>
+            <DialogContent>
+                <Box>
+                    <Typography sx={{':first-letter':{textTransform:'uppercase'}}}>{label("delete-link-message")}</Typography>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button color='error' onClick={() => { setOpen(value=>({...value, delete:false})) }}>{label("cancel")}</Button>
+                <Button color='error' variant='contained' onClick={() => { deleteAction(link.id); setOpen(value=>({...value, delete:false})) }} autoFocus>
+                    {label("accept")}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+// const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
+const InputLink = ({updatedLink=[]}) => {
     const [errors, setErrors] = useState({});
-    const [link, setLink] = useState(selectedLink || { name: "", link: "" });
+    const [link, setLink] = useState(updatedLink[0] || { name: "", link: "" });
     const navigate = useNavigate();
     const [data, setData] = useOutletContext();
     const handleSubmit = async (e) => {
@@ -148,32 +230,39 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
         }
         setErrors(tempErrors);
         if (!Object.keys(tempErrors).length) {
+            let resolveLink = {};
             try {
-                let link = {}
-                if (!tempLink.id) {
-                    link = await setUserLink(tempLink)
-                    setLinks([...links, link]);
-                    setData((value) => { return { ...value, userLinks: [...links, link] } });
+                if (updatedLink[0]) {
+                    resolveLink = await updateUserLink({ ...tempLink, id: updatedLink[0].id });
+                    setData((value) => {
+                        const tempLinks = value.userLinks || [];
+                        return {
+                            ...value,
+                            userLinks: tempLinks.map((link) => link.id === resolveLink.id ? resolveLink : link)
+                        }
+                    });
+                    updatedLink[1](value=>({...value,edit:false}));
                 }
-                else {
-                    link = await updateUserLink(tempLink);
-                    const newLinks = links.map((linkTemp) => {
-                        if (linkTemp.id === link.id) {
-                            return link;
+                else{
+                    resolveLink = await setUserLink(tempLink)
+                    setData((value) => {
+                        const tempLinks = value.userLinks || [];
+                        const links = value.user.links;
+                        return {
+                            ...value,
+                            userLinks: [...tempLinks, resolveLink],
+                            user: {
+                                ...value.user,
+                                links: {
+                                    ...links,
+                                    total: (links?.total || 0) + 1
+                                }
+                            }
                         }
-                        return linkTemp;
-                    })
-                    setLinks(links.map((linkTemp) => {
-                        if (linkTemp.id === link.id) {
-                            return link;
-                        }
-                        return linkTemp;
-                    }))
-                    setData((value) => { return { ...value, userLinks: newLinks } });
-                    setSelectedLink({ name: "", link: "", creationTime: undefined });
+                    });
                 }
                 form.reset();
-                setLink({ name: "", link: "", creationTime: undefined });
+                setLink({ name: "", link: "" });
                 setErrors({});
             } catch (error) {
                 console.error(error);
@@ -195,17 +284,17 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
         const hostname = tempUrl.hostname;
         return hostname.substring(0, hostname.lastIndexOf(".com"));
     }
-
-    useEffect(() => {
-        if (selectedLink) {
-            setLink(selectedLink);
-            setErrors({});
-        }
-    }, [selectedLink])
     return (<Stack component={"form"} onSubmit={handleSubmit} noValidate gap={2} >
         <CustomInput id="link" label={label("link")} type="text" placeholder="https://google.com" error={errors?.link} autoComplete="off" required value={link.link} onChange={(e) => { setLink({ ...link, link: e.target.value }) }} />
         <CustomInput id="name" label={label("name")} type="text" error={errors?.name} autoComplete="off" required value={link.name} onChange={(e) => { setLink({ ...link, name: e.target.value }) }} />
         <Button variant='contained' type="submit">{label("save")}</Button>
+        {
+            updatedLink[0] && (
+                <Button variant='outlined' onClick={() => {
+                    updatedLink[1](value=>({...value,edit:false}));
+                }}>{label("cancel")}</Button>
+            )
+        }
         <Snackbar
             open={Boolean(errors.global)}
             autoHideDuration={10000}
@@ -220,9 +309,6 @@ const InputLink = ({ links, setLinks, selectedLink, setSelectedLink }) => {
             message={errors.global || "error"}
             action={
                 <>
-                    <Button color="secondary" size="small" onClick={() => { (navigate("../profile")) }}>
-                        go to profile
-                    </Button>
                     <IconButton
                         size="small"
                         aria-label="close"

@@ -42,5 +42,13 @@
     "devices": "dispositivos",
     "desktop": "escritorio",
     "mobile": "móvil",
-    "top-devices": "principales dispositivos"
+    "top-devices": "principales dispositivos",
+    "update-profile-success": "perfil actualizado con éxito",
+    "update-profile-error": "error al actualizar el perfil",
+    "edit-link": "editar enlace",
+    "create-link": "crear enlace",
+    "delete-link": "eliminar enlace",
+    "delete-link-message": "¿estás seguro de que deseas eliminar este enlace? esta acción no se puede deshacer.",
+    "cancel": "cancelar",
+    "accept": "aceptar"
 }

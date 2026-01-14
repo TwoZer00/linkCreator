@@ -42,5 +42,13 @@
     "devices": "devices",
     "desktop": "desktop",
     "mobile": "mobile",
-    "top-devices": "top devices"
+    "top-devices": "top devices",
+    "update-profile-success": "profile updated successfully",
+    "update-profile-error": "error updating profile",
+    "edit-link": "edit link",
+    "create-link": "create link",
+    "delete-link": "delete link",
+    "delete-link-message": "are you sure you want to delete this link? this action cannot be undone.",
+    "cancel": "cancel",
+    "accept": "accept"
 }
