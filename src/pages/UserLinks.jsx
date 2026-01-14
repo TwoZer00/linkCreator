@@ -28,8 +28,8 @@ export default function UserLinks() {
                     <Typography variant="h1" fontSize={45}>{user?.username}</Typography>
                     <Typography variant="body1" fontSize={16}>{user?.description}</Typography>
                     <Stack direction={"row"} gap={1} alignItems={"center"}>
-                        {Object.keys(user?.socialNetwork||[0])?.map(item => {
-                            if (user?.socialNetwork[item]) {
+                        {Object.keys(user?.socialNetwork||[])?.map(item => {
+                            if (user?.socialNetwork[item]?.length > 0) {
                                 return <Link component={Button} variant='inherit' color={"rgb(0,0,0)"} key={item} href={ref.current[item][0] + user?.socialNetwork[item]} target="_blank" >{ref.current[item][1]}</Link>
                             }
                         })}
@@ -38,7 +38,7 @@ export default function UserLinks() {
                 <Stack height={"100%"} maxWidth={"md"} width={"100%"} sx={{ overflowY: "auto" }} alignItems={"center"} gap={1} p={1}>
                     {user.links?.length > 0 ? user.links?.map((link) => {
                         return (
-                            <Button LinkComponent key={link.id} color='inherit' fullWidth variant='outlined' sx={{ fontWeight: 500, fontSize: 18, }} onClick={() => { handleClick(link) }}>
+                            <Button key={link.id} color='inherit' fullWidth variant='outlined' sx={{ fontWeight: 500, fontSize: 18, }} onClick={() => { handleClick(link) }}>
                                 {link.name}
                             </Button>
                         )
