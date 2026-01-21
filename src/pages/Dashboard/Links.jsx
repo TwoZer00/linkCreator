@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import Typography from '@mui/material/Typography'
-import { Alert, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormHelperText, IconButton, InputLabel, OutlinedInput, Paper, Snackbar, Stack } from '@mui/material'
+import { useEffect, useState } from 'react';
+import Typography from '@mui/material/Typography';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Snackbar, Stack } from '@mui/material';
 import { deleteUserLink, getUserLinks, setUserLink, updateUserLink } from '../../firebase/utils';
 import { CustomInput } from '../../components/CustomInput';
-import { label } from '../../locales/locale'
+import { label } from '../../locales/locale';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Close, Delete, Edit } from '@mui/icons-material';
 
@@ -212,7 +212,7 @@ const InputLink = ({updatedLink=[]}) => {
             switch (input.id) {
                 case "link":
                     if (!input.checkValidity() || !validateURL(input.value))
-                        tempErrors.link = input.validationMessage || "invalid link follow pattern indicated";
+                        tempErrors.link = input.validationMessage || label("invalid-link-pattern");
                     else
                         delete tempErrors.link;
                     break;

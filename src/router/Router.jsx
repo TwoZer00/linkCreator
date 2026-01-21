@@ -69,34 +69,34 @@ export const router = createBrowserRouter([
                 ]
             },
             {
-                path: ':user',
-                element: <UserLinks />,
-                loader: async ({ params }) => {
-                    if (params.user === undefined) {
-                        return redirect('/');
-                    }
-                    const user = params.user;
-                    await getAuth().authStateReady();
-                    try {
-                        if (user.length > 20) {
-                            const userData = await getUserFromId(user);
-                            const userLinks = await getUserLinks(userData.id);
-                            return { ...userData, links: userLinks }
-                        }
-                        else {
-                            const userData = await getUserFromUsername(user);
-                            const userLinks = await getUserLinks(userData);
-                            return { ...userData, links: userLinks }
-                        }
-                    } catch (error) {
-                        return redirect('/')
-                    }
-                }
-            },
-            {
                 path: '',
                 element: <Home />
             }
         ]
-    }
+    },
+    {
+        path: ':user',
+        element: <UserLinks />,
+        loader: async ({ params }) => {
+            const user = params.user;
+            if (user === undefined) {
+                return redirect('/');
+            }
+            await getAuth().authStateReady();
+            try {
+                if (user.length > 20) {
+                    const userData = await getUserFromId(user);
+                    const userLinks = await getUserLinks(userData.id);
+                    return { ...userData, links: userLinks }
+                }
+                else {
+                    const userData = await getUserFromUsername(user);
+                    const userLinks = await getUserLinks(userData);
+                    return { ...userData, links: userLinks }
+                }
+            } catch (error) {
+                return redirect('/')
+            }
+        }
+    },
 ])

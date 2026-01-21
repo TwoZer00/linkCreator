@@ -50,5 +50,6 @@
     "delete-link": "delete link",
     "delete-link-message": "are you sure you want to delete this link? this action cannot be undone.",
     "cancel": "cancel",
-    "accept": "accept"
+    "accept": "accept",
+    "invalid-link-pattern": "invalid link follow pattern indicated"
 }
