@@ -51,5 +51,7 @@
     "delete-link-message": "¿estás seguro de que deseas eliminar este enlace? esta acción no se puede deshacer.",
     "cancel": "cancelar",
     "accept": "aceptar",
+    "load-more":"cargar mas",
+    "country":"país",
     "invalid-link-pattern": "patrón de enlace inválido, sigue el patrón indicado"
 }

@@ -144,9 +144,15 @@ export const getUserLinks = async ({ id } = {}) => {
     return querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 }
 
-export const getUserLinksOfLastMonth = async ({ id } = {}) => {
+export const getUserLinksOfLastMonth = async ({ id,lastVisible } = {}) => {
     const linkCollection = collection(db, `user/${id || auth.currentUser.uid}/link`);
-    const q = query(linkCollection, where("creationTime", ">=", Timestamp.fromDate(dayjs().startOf('month').toDate())));
+    const q = query(linkCollection,
+                    where("creationTime", ">=",Timestamp.fromDate(dayjs().startOf('month').toDate())),
+                    limit(5)
+                );
+    if(lastVisible){
+        q = query(q, orderBy("creationTime"), startAfter(lastVisible), limit(12));
+    }
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 }

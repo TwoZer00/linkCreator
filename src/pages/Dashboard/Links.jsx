@@ -117,7 +117,7 @@ const LinkElement = ({ link, ...props }) => {
                     <Edit />
                 </IconButton>
             </Paper>
-            <DeleteLink open={modal.delete} setOpen={setModal} link={link}/>
+            <DeleteLink action={props.deleteAction} open={modal.delete} setOpen={setModal} link={link}/>
             <EditLink open={modal.edit} setOpen={setModal} link={link} />
         </>
     )
@@ -135,43 +135,47 @@ const EditLink = ({ open, setOpen, link }) => {
     )
 
 }
-const DeleteLink = ({ open, setOpen, link }) => {
-    const handleDelete = async ({ id }) => {
-        setData(value => { return { ...value, loading: true } })
-        const newLinks = links.filter((link) => link.id !== id);
-        const newvisits = data.user.links.visits || { total: 0, byCountry: [], byDevice: [] };
-        const linkToDelete = links.find((link) => link.id === id);
-        if (linkToDelete?.visits) {
-            newvisits.total -= linkToDelete.visits.total || 0;
-            // Adjust byCountry
-            linkToDelete.visits.byCountry?.forEach((countryVisit) => {
-                const existingCountry = newvisits.byCountry.find(item => item.country === countryVisit.country);
-                if (existingCountry) {
-                    existingCountry.count -= countryVisit.count;
-                    if (existingCountry.count <= 0) {
-                        newvisits.byCountry = newvisits.byCountry.filter(item => item.country !== countryVisit.country);
-                    }
-                }
-            });
-            // Adjust byDevice
-            linkToDelete.visits.byDevice?.forEach((deviceVisit) => {
-                const existingDevice = newvisits.byDevice.find(item => item.device === deviceVisit.device);
-                if (existingDevice) {
-                    existingDevice.count -= deviceVisit.count;
-                    if (existingDevice.count <= 0) {
-                        newvisits.byDevice = newvisits.byDevice.filter(item => item.device !== deviceVisit.device);
-                    }
-                }
-            });
-        }
-        setLinks(newLinks);
-        await deleteUserLink(id);
-        setData(
-            (value)=>{
-                return {...value, userLinks: newLinks, user:{...value.user,links:{...value.user.links,visits:value.user.links.visits,total:(value.user.links.total||0)-1}},loading:false}
-            }
-        )
-    }
+const DeleteLink = ({ action,open, setOpen, link }) => {
+    // console.log(link);
+    
+    // const [data,setData] = useOutletContext()
+
+    // const handleDelete = async ({ id }) => {
+    //     setData(value => { return { ...value, loading: true } })
+    //     const newLinks = links.filter((link) => link.id !== id);
+    //     const newvisits = data.user.links.visits || { total: 0, byCountry: [], byDevice: [] };
+    //     const linkToDelete = links.find((link) => link.id === id);
+    //     if (linkToDelete?.visits) {
+    //         newvisits.total -= linkToDelete.visits.total || 0;
+    //         // Adjust byCountry
+    //         linkToDelete.visits.byCountry?.forEach((countryVisit) => {
+    //             const existingCountry = newvisits.byCountry.find(item => item.country === countryVisit.country);
+    //             if (existingCountry) {
+    //                 existingCountry.count -= countryVisit.count;
+    //                 if (existingCountry.count <= 0) {
+    //                     newvisits.byCountry = newvisits.byCountry.filter(item => item.country !== countryVisit.country);
+    //                 }
+    //             }
+    //         });
+    //         // Adjust byDevice
+    //         linkToDelete.visits.byDevice?.forEach((deviceVisit) => {
+    //             const existingDevice = newvisits.byDevice.find(item => item.device === deviceVisit.device);
+    //             if (existingDevice) {
+    //                 existingDevice.count -= deviceVisit.count;
+    //                 if (existingDevice.count <= 0) {
+    //                     newvisits.byDevice = newvisits.byDevice.filter(item => item.device !== deviceVisit.device);
+    //                 }
+    //             }
+    //         });
+    //     }
+    //     setLinks(newLinks);
+    //     await deleteUserLink(id);
+    //     setData(
+    //         (value)=>{
+    //             return {...value, userLinks: newLinks, user:{...value.user,links:{...value.user.links,visits:value.user.links.visits,total:(value.user.links.total||0)-1}},loading:false}
+    //         }
+    //     )
+    // }
     return (
         <Dialog open={open} onClose={() => { setOpen(value=>({...value, delete:false})) }}>
             <DialogTitle sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("delete-link")}</DialogTitle>
@@ -182,7 +186,7 @@ const DeleteLink = ({ open, setOpen, link }) => {
             </DialogContent>
             <DialogActions>
                 <Button color='error' onClick={() => { setOpen(value=>({...value, delete:false})) }}>{label("cancel")}</Button>
-                <Button color='error' variant='contained' onClick={() => { deleteAction(link.id); setOpen(value=>({...value, delete:false})) }} autoFocus>
+                <Button color='error' variant='contained' onClick={() => { action(link); setOpen(value=>({...value, delete:false})) }} autoFocus>
                     {label("accept")}
                 </Button>
             </DialogActions>

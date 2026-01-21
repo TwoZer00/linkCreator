@@ -1,12 +1,10 @@
-import { ThemeProvider } from '@emotion/react';
-import { Ballot, Favorite, Home, List, ListAlt, LocationOn, Person, Restore } from '@mui/icons-material';
-import { BottomNavigation, BottomNavigationAction, Box, CssBaseline, Paper, Stack, createTheme } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import { Link, Outlet, useLoaderData, useLocation, useMatch, useMatches, useOutletContext } from 'react-router-dom';
+import { Ballot, Home, Person } from '@mui/icons-material';
+import { BottomNavigation, BottomNavigationAction, Box, Paper } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Link, Outlet, useLocation, useOutletContext } from 'react-router-dom';
 import { label } from '../../locales/locale';
 
 export default function Dashboard() {
-    const theme = createTheme();
     const location = useLocation();
     const [data, setData] = useOutletContext();
     
@@ -22,8 +20,7 @@ export default function Dashboard() {
     }, [location])
 
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
+        <>
             <Box height={"100%"} maxHeight={"100dvh"} mx={"auto"} width={"100%"} maxWidth={"lg"} overflow={"hidden"} p={1} pb={4}>
                 <Outlet context={[data, setData]} />
             </Box>
@@ -53,6 +50,6 @@ export default function Dashboard() {
                         }} icon={<Person />} />
                     </BottomNavigation>
             </Paper>
-        </ThemeProvider>
+        </>
     )
 }
