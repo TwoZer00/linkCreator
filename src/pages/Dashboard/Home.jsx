@@ -1,13 +1,11 @@
-import { Box, Button, CssBaseline, DialogContent, DialogTitle, IconButton, Link, List, ListItem, ListItemText, ListSubheader, Paper, Stack, Typography } from '@mui/material'
-import  { useEffect, useRef, useState } from 'react'
-import { getUserLinks, getUserLinksOfLastMonth} from '../../firebase/utils';
+import { Box, Button, DialogContent, DialogTitle, Link, List, ListItem, ListItemText, ListSubheader, Paper, Stack, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import { getUserLinks, getUserLinksOfLastMonth } from '../../firebase/utils';
 import { useOutletContext } from 'react-router-dom';
-import { label } from "../../locales/locale"
+import { label } from "../../locales/locale";
 import { isoAlphaCode2ToCountries } from '../../utils/const';
 import ModalComponent from '../../components/ModalComponent';
-import { use } from 'react';
 import { OpenInNew } from '@mui/icons-material';
-import { useTheme } from '@emotion/react';
 
 export function Home() {
     const [links, setLinks] = useState([])
@@ -52,7 +50,7 @@ export function Home() {
                         {links?.length > 0 ? (links?.slice(0,4)?.map((link) => {
                             return (
                                 <ListItem key={link.id}>
-                                    <ListItemText primary={link.name} secondary={<Button disableRipple endIcon={<OpenInNew/>} variant='text' color='info' sx={{textTransform: 'lowercase'}} component={Link}><Typography title={link.link} variant="inherit" color="inherit" sx={{maxWidth:"15ch",overflow: "hidden",textOverflow:"ellipsis"}}>{link.link}</Typography></Button>} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{noWrap: true,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }} />
+                                    <ListItemText primary={link.name} secondary={<Button target='_blank' rel='noopener noreferrer' href={link.link} endIcon={<OpenInNew/>} variant='text' color='info' sx={{textTransform: 'lowercase'}} component={Link}><Typography title={link.link} variant="inherit" color="inherit" sx={{maxWidth:"15ch",overflow: "hidden",textOverflow:"ellipsis"}}>{link.link}</Typography></Button>} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{noWrap: true,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }} />
                                     <ListItemText primary={link.visits?.total|| 0} sx={{ flexGrow: 0 }} primaryTypographyProps={{ width: "fit-content" }} />
                                 </ListItem>
                             )
@@ -140,14 +138,18 @@ export function Home() {
         </>
     )
 }
-
+const dataR = {
+    countries:"countries",
+    links:"links",
+    devices:"devices"
+}
 const DetailView = ({dataRef})=>{
     const [data,setData] = useOutletContext()
     const [content,setContent] = useState([])
     const [titles,setTitles] = useState([])
     useEffect(
         ()=>{
-            if(dataRef==="countries"){
+            if(dataRef===dataR.countries){
                 const countries = data.user?.links?.visits?.byCountry
                 setData(
                     prev=>({...prev, user:{
@@ -162,11 +164,11 @@ const DetailView = ({dataRef})=>{
                     }})
                 )
             }
-            else if(dataRef==="links"){
+            else if(dataRef===dataR.links){
                 const links = getUserLinks();
                 links.then((res=>setData(prev=>({...prev,userLinks:res}))))
             }
-            else if(dataRef==="devices"){
+            else if(dataRef===dataR.devices){
                 const devices = data.user?.links?.visits?.byDevice
                 setData(
                     prev=>({...prev, user:{
@@ -211,8 +213,6 @@ const DetailView = ({dataRef})=>{
             )
         }
     ,[data])
-    // const theme = useTheme();
-    // const maxHeight = useMediaQuery(theme.breakpoints);
     return (
         <>
             <DialogTitle>
