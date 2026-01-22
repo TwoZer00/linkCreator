@@ -233,8 +233,8 @@ const DetailView = ({dataRef})=>{
                     }
                 >
                 
-                {content?.map((item)=>{
-                    return <ListItem key={item.item}>
+                {content?.map((item,index)=>{
+                    return <ListItem key={item.item+index}>
                         <ListItemText primary={item.item}/>
                         <ListItemText primary={item.count} sx={{ textAlign: "right" }}/>
                     </ListItem>

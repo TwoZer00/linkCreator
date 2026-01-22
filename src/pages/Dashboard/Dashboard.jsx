@@ -1,12 +1,14 @@
 import { Ballot, Home, Person } from '@mui/icons-material';
-import { BottomNavigation, BottomNavigationAction, Box, Paper } from '@mui/material';
+import { Backdrop, BottomNavigation, BottomNavigationAction, Box, LinearProgress, Paper, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useOutletContext } from 'react-router-dom';
 import { label } from '../../locales/locale';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getUserFromId } from '../../firebase/utils';
 
 export default function Dashboard() {
     const location = useLocation();
-    const [data, setData] = useOutletContext();
+    const [data, setData] = useState({})
     
     const PAGES = {
         "dashboard": 0,
@@ -19,9 +21,26 @@ export default function Dashboard() {
         setValue(PAGES[location.pathname.substring(location.pathname.lastIndexOf("/") + 1)]);
     }, [location])
 
+    useEffect(() => {
+        onAuthStateChanged(getAuth(), async(user) => {
+            if (!user) {
+                setData({})
+            }
+            else if(user.uid){
+                const userData = await getUserFromId(user.uid)
+                setData(
+                    (value)=>{
+                        return {...value,user:userData}
+                    }
+                )
+            }
+        })
+        return () => { }
+    },[])
+
     return (
-        <>
-            <Box height={"100%"} maxHeight={"100dvh"} mx={"auto"} width={"100%"} maxWidth={"lg"} overflow={"hidden"} p={1} pb={4}>
+        <Stack direction={"column"} height={"100dvh"}>
+            <Box flex={1} p={1}>
                 <Outlet context={[data, setData]} />
             </Box>
             <Paper sx={{position: 'sticky', bottom: 0, left: 0, right: 0, zIndex: 1, backgroundColor: "rgba(255,255,255,0.2)", backdropFilter: "blur(64px)" }} elevation={3} >
@@ -50,6 +69,11 @@ export default function Dashboard() {
                         }} icon={<Person />} />
                     </BottomNavigation>
             </Paper>
-        </>
+            <Backdrop
+                sx={{ bgcolor: "rgba(255,255,255,0.5)" }}
+                open={data?.loading || false}
+            />
+            {data?.loading && <LinearProgress variant="query" sx={{ position: "fixed", left: 0, zIndex: (theme) => theme.zIndex.drawer + 1, width: "100%" }} />}
+        </Stack>
     )
 }

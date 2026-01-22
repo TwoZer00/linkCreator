@@ -2,10 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { AccountCircle, Menu as MenuIcon, More, Search } from '@mui/icons-material'
-import { AppBar, Box, Button, CssBaseline, IconButton, Menu, MenuItem, Paper, Slide, Stack, Toolbar, Typography, useScrollTrigger } from '@mui/material'
+import { AppBar, Box, Button, CssBaseline, IconButton, List, ListItem, Menu, MenuItem, Paper, Slide, Stack, Toolbar, Typography, useScrollTrigger } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth';
 import { label } from '../locales/locale';
+import { useTheme } from '@emotion/react';
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
     alignItems: 'flex-start',
     paddingTop: theme.spacing(1),
@@ -17,6 +18,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 }));
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 export default function Home() {
+    const theme = useTheme()
     const [anchorEl, setAnchorEl] = useState(null);
     const [auth, setAuth] = useState(getAuth());
     const navigate = useNavigate();
@@ -33,24 +35,26 @@ export default function Home() {
         }
     }, [getAuth().currentUser]);
     return (
-        <Stack height={"100%"} justifyContent={"center"} alignItems={"center"} >
-                <Box textAlign={"center"} maxWidth={300}>
-                    <Typography variant="h1" fontSize={45}>
-                        linkCreator
-                    </Typography>
-                    <Typography variant="h5" fontSize={15}>
-                        {label("home-subtitle")}
-                    </Typography>
-                    <Stack direction={"row"} justifyContent={"space-around"} mt={2}>
-                        <Button variant="contained" onClick={() => navigate("/login")}>
-                            {label("login")}
-                        </Button>
-                        <Button variant="contained" onClick={() => navigate("/register")}>
-                            {label("register")}
-                        </Button>
-                    </Stack>
-                </Box>
-        </Stack>
+        <>
+            <Stack height={"100dvh"} justifyContent={"center"} alignItems={"center"} >
+                    <Box textAlign={"center"} maxWidth={300}>
+                        <Typography variant="h1" fontSize={45}>
+                            linkCreator
+                        </Typography>
+                        <Typography variant="h5" fontSize={15}>
+                            {label("home-subtitle")}
+                        </Typography>
+                        <Stack direction={"row"} justifyContent={"space-around"} mt={2}>
+                            <Button variant="contained" onClick={() => navigate("/login")}>
+                                {label("login")}
+                            </Button>
+                            <Button variant="contained" onClick={() => navigate("/register")}>
+                                {label("register")}
+                            </Button>
+                        </Stack>
+                    </Box>
+            </Stack>
+        </>
     )
 }
 

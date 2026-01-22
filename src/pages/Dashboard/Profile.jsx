@@ -119,7 +119,7 @@ export default function Profile() {
     return (
         <>
         <Typography variant="h1" fontWeight={"semibold"} fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' },position:"sticky",top:"0",zIndex:100,bgcolor:theme.palette.background.default }}>{label("my-profile")}</Typography>
-        <Stack rowGap={2}  maxHeight={"100%"} sx={{overflowY:"scroll"}} component={"form"} noValidate onSubmit={handleSubmit}>
+        <Stack rowGap={2}  maxHeight={"100%"} component={"form"} noValidate onSubmit={handleSubmit}>
                 <Stack direction={"row"} alignItems={"center"} gap={2}>
                     <CustomAvatar profile={[data, setData]} src={formData?.avatar || data?.user?.avatar} alt={formData?.username} sx={{ width: 100, height: "auto", aspectRatio: 1 }} />
                     <CustomInput fullWidth type={"file"} id={"avatar"} error={errors?.avatar} name={"avatar"} accept={"image/*"} onChange={handleFile} />

@@ -1,15 +1,14 @@
-import { Outlet, createBrowserRouter, redirect, useHref, useNavigate, useOutletContext } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import Login from '../pages/Login';
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Links from "../pages/Dashboard/Links";
 import Profile from "../pages/Dashboard/Profile";
-import { Box } from "@mui/material";
 import { getAuth } from "firebase/auth";
-import { getUser, getUserFromId, getUserFromUsername, getUserLinks } from "../firebase/utils";
+import { getUserFromId, getUserFromUsername, getUserLinks } from "../firebase/utils";
 import UserLinks from "../pages/UserLinks";
 import Home from "../pages/Home";
-import { Home as HomeDashboard } from '../pages/Dashboard/Home'
+import { Home as HomeDashboard } from '../pages/Dashboard/Home';
 import Init from "../Init";
 export const router = createBrowserRouter([
     {
@@ -82,7 +81,9 @@ export const router = createBrowserRouter([
             if (user === undefined) {
                 return redirect('/');
             }
-            await getAuth().authStateReady();
+            await getAuth().authStateReady().catch(()=>{
+                return redirect('/')
+            });
             try {
                 if (user.length > 20) {
                     const userData = await getUserFromId(user);

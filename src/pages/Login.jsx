@@ -8,10 +8,10 @@ import { ArrowBack } from '@mui/icons-material';
 export default function Login() {
     const [error, setError] = useState();
     const navigate = useNavigate();
-    const [data, setData] = useOutletContext();
+    // const [data, setData] = useOutletContext();
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setData((value) => { return { ...value, loading: true } });
+        // setData((value) => { return { ...value, loading: true } });
         const form = event.currentTarget;
         const data = new FormData(event.currentTarget);
         const userLogin = {
@@ -36,7 +36,7 @@ export default function Login() {
                 error.code === "auth/wrong-password" && setError({ ...error, password: "Wrong password" });
             }
             finally {
-                setData((value) => { return { ...value, loading: false } });
+                // setData((value) => { return { ...value, loading: false } });
             }
         }
         else {
@@ -51,7 +51,7 @@ export default function Login() {
             </Box>
             <Stack maxWidth={"sm"} mx={"auto"} gap={2} component={"form"} onSubmit={handleSubmit} noValidate width={"100%"} height={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
                 <Box textAlign={"center"}>
-                    <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" },textTransform:"uppercase" }}>{label("login-opt")}</Typography>
+                    <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("login-opt")}</Typography>
                     <Typography variant="subtitle1" fontSize={14} sx={{ ":first-letter":{textTransform:"uppercase"} }} >{label("login-subtitle")}</Typography>
                 </Box>
                 <CustomInput id="email" label={label("email")} name="email" type="email" error={error?.email} required autoComplete="email" autoFocus={true} />

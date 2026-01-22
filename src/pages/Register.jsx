@@ -10,10 +10,10 @@ import { label } from '../locales/locale'
 export default function Register() {
     const [error, setError] = useState();
     const navigate = useNavigate();
-    const [data, setData] = useOutletContext();
+    // const [data, setData] = useOutletContext();
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setData((value) => { return { ...value, loading: true } })
+        // setData((value) => { return { ...value, loading: true } })
         const form = event.currentTarget;
         const data = new FormData(event.currentTarget);
         const userRegister = {
@@ -49,11 +49,11 @@ export default function Register() {
                     setError({ ...error, other: label(error.code) })
             }
             finally {
-                setData((value) => { return { ...value, loading: false } })
+                // setData((value) => { return { ...value, loading: false } })
             }
         }
         else {
-            setData((value) => { return { ...value, loading: false } })
+            // setData((value) => { return { ...value, loading: false } })
         }
     }
     return (
@@ -61,7 +61,7 @@ export default function Register() {
             <Box>
                 <BackButton/>
             </Box>
-            <Stack maxWidth={"sm"} mx={"auto"} component={"form"} gap={2} onSubmit={handleSubmit} height={"100dvh"} width={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
+            <Stack maxWidth={"sm"} mx={"auto"} component={"form"} gap={2} onSubmit={handleSubmit} height={"100%"} width={"100%"} p={1} justifyContent={"center"} alignItems={"center"} >
                     <Box textAlign={"center"}>
                         <Typography variant="h1" fontSize={45} sx={{ ":first-letter": { textTransform: "uppercase" } }} >{label("register")}</Typography>
                         <Typography variant="subtitle1" fontSize={14} sx={{ ":first-letter": { textTransform: "uppercase" } }}>{label("register-subtitle")}</Typography>
