@@ -47,7 +47,7 @@ export function Home() {
                         subheader={
                             <ListSubheader component="div" id="nested-list-subheader" sx={{ display: "flex", justifyContent: "space-between", ":first-letter": { textTransform: 'uppercase' } }}><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("latest-links")}</Typography><Typography variant="inherit" sx={{ ":first-letter": { textTransform: 'uppercase' } }}>{label("visits")}</Typography></ListSubheader>
                         }>
-                        {links?.length > 0 ? (links?.slice(0,4)?.map((link) => {
+                        {links?.length > 0 ? (links.sort((a,b)=> b.creationTime.seconds - a.creationTime.seconds ).slice(0,4)?.map((link) => {
                             return (
                                 <ListItem key={link.id}>
                                     <ListItemText primary={link.name} secondary={<Button target='_blank' rel='noopener noreferrer' href={link.link} endIcon={<OpenInNew/>} variant='text' color='info' sx={{textTransform: 'lowercase'}} component={Link}><Typography title={link.link} variant="inherit" color="inherit" sx={{maxWidth:"15ch",overflow: "hidden",textOverflow:"ellipsis"}}>{link.link}</Typography></Button>} sx={{ ":first-letter": { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: "12ch", noWrap: true }} secondaryTypographyProps={{noWrap: true,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }} />
