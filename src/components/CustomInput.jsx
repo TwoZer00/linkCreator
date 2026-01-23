@@ -1,15 +1,16 @@
-import { FormControl, FormHelperText, Input, InputBase, InputLabel, OutlinedInput, Typography } from "@mui/material"
+import { FormControl, FormHelperText, InputLabel, OutlinedInput } from "@mui/material";
 import PropTypes from "prop-types";
 
 export const CustomInput = ({ error,disabled=false,fullWidth=false,label,id, ...props }) => {
     return (
         <FormControl disabled={disabled} variant="outlined" fullWidth={fullWidth} >
-            <InputLabel htmlFor={id}  variant="outlined" error={Boolean(error)} sx={{ ":first-letter": { textTransform: "uppercase" } }} >
+            <InputLabel htmlFor={id} error={Boolean(error)} sx={{ ":first-letter": { textTransform: "uppercase" } }} >
                 {label}
             </InputLabel>
             <OutlinedInput
                 fullWidth={fullWidth}
                 id={id}
+                label={label}
                 error={Boolean(error)}
                 {...props}
             />

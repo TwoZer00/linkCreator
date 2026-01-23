@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Stack, Avatar } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { Avatar } from '@mui/material'
 import { getDownloadURL, getStorage, ref } from 'firebase/storage'
 import { app } from '../firebase/init'
 
