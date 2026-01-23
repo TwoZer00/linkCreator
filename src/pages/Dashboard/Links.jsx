@@ -67,7 +67,7 @@ export default function Links() {
     }
     return (
         <>
-            <Stack direction={"column"} maxHeight={"100%"} p={1} gap={2} pb={8}>
+            <Stack direction={"column"} maxHeight={"100%"} p={1} gap={2}>
                 <Typography variant="h1" fontSize={22} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links")}</Typography>
                 <Typography variant="h3" fontSize={16} sx={{ ":first-letter": { textTransform: 'uppercase' } }} >{label("my-links-subtitle")}</Typography>
                 <InputLink />

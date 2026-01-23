@@ -1,6 +1,6 @@
-import { Box, Button, FormControl, FormHelperText, IconButton, InputLabel, Link, OutlinedInput, Stack, Typography, createTheme } from '@mui/material';
-import  { useState } from 'react';
-import { Link as LinkRouterDom, redirect, useNavigate, useNavigation, useOutletContext } from 'react-router-dom';
+import { Box, Button, FormControl, FormHelperText, IconButton, InputLabel, Link, OutlinedInput, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Link as LinkRouterDom, useNavigate } from 'react-router-dom';
 import { logEmailPassword } from '../firebase/utils';
 import { label } from '../locales/locale';
 import { ArrowBack } from '@mui/icons-material';

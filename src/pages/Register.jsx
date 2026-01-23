@@ -1,10 +1,10 @@
-import { ArrowBack, Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, Button, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, Stack, Typography} from '@mui/material';
-import  { useState } from 'react';
-import { useNavigate, Link as LinkRouterDom, useOutletContext } from 'react-router-dom';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, Button, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, Link, OutlinedInput, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate, Link as LinkRouterDom } from 'react-router-dom';
 import { registerEmailPassword } from '../firebase/utils';
 import { BackButton, CustomInput } from './Login';
-import { label } from '../locales/locale'
+import { label } from '../locales/locale';
 
 
 export default function Register() {
