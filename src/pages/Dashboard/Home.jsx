@@ -52,7 +52,7 @@ export function Home () {
               ? (links.sort((a, b) => b.creationTime.seconds - a.creationTime.seconds).slice(0, 4)?.map((link) => {
                   return (
                     <ListItem key={link.id}>
-                      <ListItemText primary={link.name} secondary={<Button target='_blank' rel='noopener noreferrer' href={link.link} endIcon={<OpenInNew />} variant='text' color='info' sx={{ textTransform: 'lowercase' }} component={Link}><Typography title={link.link} variant='inherit' color='inherit' sx={{ maxWidth: '15ch', overflow: 'hidden', textOverflow: 'ellipsis' }}>{link.link}</Typography></Button>} sx={{ ':first-letter': { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: '12ch', noWrap: true }} secondaryTypographyProps={{ noWrap: true, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} />
+                      <ListItemText primary={link.name} secondary={<Button target='_blank' rel='noopener noreferrer' href={link.link} endIcon={<OpenInNew />} variant='text' color='info' sx={{ textTransform: 'lowercase' }} component={Link}><Typography title={link.link} variant='caption' color='inherit' sx={{ maxWidth: '15ch', overflow: 'hidden', textOverflow: 'ellipsis' }}>{link.link}</Typography></Button>} sx={{ ':first-letter': { textTransform: 'uppercase' }, flexGrow: 2 }} primaryTypographyProps={{ maxWidth: '12ch', noWrap: true }} secondaryTypographyProps={{ noWrap: true, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} />
                       <ListItemText primary={link.visits?.total || 0} sx={{ flexGrow: 0 }} primaryTypographyProps={{ width: 'fit-content' }} />
                     </ListItem>
                   )
