@@ -5,7 +5,11 @@ import { deleteUserLink, getUserLinks, setUserLink, updateUserLink } from '../..
 import { CustomInput } from '../../components/CustomInput'
 import { label } from '../../locales/locale'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-import { Close, Delete, Edit } from '@mui/icons-material'
+import { Close, Delete, Edit, DragIndicator } from '@mui/icons-material'
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 const style = {
   position: 'absolute',
@@ -79,33 +83,100 @@ export default function Links () {
 const LinksList = ({ ...props }) => {
   const [links, setLinks] = useState([])
   const [data, setData] = useOutletContext()
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
   useEffect(() => {
     const fetchLinks = async () => {
       setData((value) => { return { ...value, loading: true } })
       const tempData = data?.userLinks || await getUserLinks()
-      setLinks(tempData)
-      setData((value) => { return { ...value, userLinks: tempData, loading: false } })
+      // Sort by order attribute, fallback to creation time
+      const sortedLinks = tempData.sort((a, b) => {
+        if (a.order !== undefined && b.order !== undefined) {
+          return a.order - b.order
+        }
+        return new Date(a.creationTime) - new Date(b.creationTime)
+      })
+      setLinks(sortedLinks)
+      setData((value) => { return { ...value, userLinks: sortedLinks, loading: false } })
     }
 
     fetchLinks()
   })
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event
+
+    if (active.id !== over?.id && over) {
+      const oldIndex = links.findIndex(item => item.id === active.id)
+      const newIndex = links.findIndex(item => item.id === over.id)
+      const newOrder = arrayMove(links, oldIndex, newIndex)
+      
+      // Update order attribute for each link
+      const updatedLinks = newOrder.map((link, index) => ({
+        ...link,
+        order: index
+      }))
+      
+      setLinks(updatedLinks)
+      setData((value) => ({ ...value, userLinks: updatedLinks }))
+      
+      // Save order to database
+      updatedLinks.forEach(async (link) => {
+        await updateUserLink({ ...link, id: link.id })
+      })
+    }
+  }
+
   return (
-    <Box flex={1} height='100%' overflow='auto' display='flex' flexDirection='column' gap={2}>
-      {
-                links?.map((link, index) => {
-                  return (
-                    <LinkElement link={link} key={'index' + index} {...props} />
-                  )
-                })
-            }
-    </Box>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <Box flex={1} height='100%' overflow='auto' display='flex' flexDirection='column' gap={2}>
+        <SortableContext items={links.map(link => link.id)} strategy={verticalListSortingStrategy}>
+          {
+            links?.map((link, index) => {
+              return (
+                <SortableLinkElement link={link} key={link.id} {...props} />
+              )
+            })
+          }
+        </SortableContext>
+      </Box>
+    </DndContext>
   )
 }
-const LinkElement = ({ link, ...props }) => {
+const SortableLinkElement = ({ link, ...props }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: link.id })
+
+  const style = {
+    transform: transform ? `translate3d(0, ${transform.y}px, 0)` : undefined,
+    transition,
+  }
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <LinkElement link={link} dragProps={{ attributes, listeners }} {...props} />
+    </div>
+  )
+}
+
+const LinkElement = ({ link, dragProps, ...props }) => {
   const [modal, setModal] = useState({ edit: false, delete: false })
   return (
     <>
       <Paper variant='outlined' component={Stack} p={1} direction='row'>
+        <IconButton {...dragProps?.attributes} {...dragProps?.listeners} sx={{ cursor: 'grab' }}>
+          <DragIndicator />
+        </IconButton>
         <Box flex={1} onClick={() => { props.onClick(link) }}>
           <Typography variant='h2' fontSize={18} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{link.name}</Typography>
           <Typography variant='h3' fontSize={12}>{link.link}</Typography>

@@ -38,7 +38,14 @@ export default function UserLinks () {
           </Stack>
           <Stack height='100%' maxWidth='md' width='100%' sx={{ overflowY: 'auto' }} alignItems='center' gap={1} p={1}>
             {user.links?.length > 0
-              ? user.links?.map((link) => {
+              ? user.links
+                  ?.sort((a, b) => {
+                    if (a.order !== undefined && b.order !== undefined) {
+                      return a.order - b.order
+                    }
+                    return new Date(a.creationTime) - new Date(b.creationTime)
+                  })
+                  ?.map((link) => {
                 return (
                   <Button key={link.id} color='inherit' fullWidth variant='outlined' sx={{ fontWeight: 500, fontSize: 18 }} onClick={() => { handleClick(link) }}>
                     {link.name}
