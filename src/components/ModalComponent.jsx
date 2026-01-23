@@ -1,5 +1,4 @@
-import { Dialog, DialogTitle, Typography, useMediaQuery } from '@mui/material'
-import { label } from '../locales/locale'
+import { Dialog, useMediaQuery } from '@mui/material'
 import { useTheme } from '@emotion/react'
 
 const ModalComponent = ({ children, open, setOpen }) => {
