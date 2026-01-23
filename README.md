@@ -106,4 +106,4 @@ This project is licensed under the MIT License.
 
 ## Contact
 
-For support or questions, contact: admin@linkcreator.app
+For support or questions, contact: me@twozer00.dev
