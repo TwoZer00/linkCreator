@@ -53,5 +53,13 @@
     "accept": "accept",
     "load-more": "load more",
     "country":"country",
-    "invalid-link-pattern": "invalid link follow pattern indicated"
+    "invalid-link-pattern": "invalid link follow pattern indicated",
+    "visual-customization": "visual customization",
+    "primary-color": "primary color",
+    "background-color": "background color",
+    "button-style": "button style",
+    "font-family": "font family",
+    "rounded": "rounded",
+    "square": "square",
+    "pill": "pill"
 }

@@ -53,5 +53,13 @@
     "accept": "aceptar",
     "load-more":"cargar mas",
     "country":"país",
-    "invalid-link-pattern": "patrón de enlace inválido, sigue el patrón indicado"
+    "invalid-link-pattern": "patrón de enlace inválido, sigue el patrón indicado",
+    "visual-customization": "personalización visual",
+    "primary-color": "color primario",
+    "background-color": "color de fondo",
+    "button-style": "estilo de botón",
+    "font-family": "familia de fuente",
+    "rounded": "redondeado",
+    "square": "cuadrado",
+    "pill": "píldora"
 }

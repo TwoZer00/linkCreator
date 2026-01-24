@@ -155,39 +155,43 @@ export default function Profile () {
             />
           )
         })}
-        <Typography variant='h2' fontSize={18} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>Visual Customization</Typography>
+        <Typography variant='h2' fontSize={18} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{label('visual-customization')}</Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
           <TextField
-            label="Primary Color"
+            label={label('primary-color')}
             type="color"
             value={customization.primaryColor}
             onChange={(e) => setCustomization({ ...customization, primaryColor: e.target.value })}
             size="small"
+            InputLabelProps={{ sx: { ':first-letter': { textTransform: 'uppercase' } } }}
           />
           <TextField
-            label="Background Color"
+            label={label('background-color')}
             type="color"
             value={customization.backgroundColor}
             onChange={(e) => setCustomization({ ...customization, backgroundColor: e.target.value })}
             size="small"
+            InputLabelProps={{ sx: { ':first-letter': { textTransform: 'uppercase' } } }}
           />
           <TextField
             select
-            label="Button Style"
+            label={label('button-style')}
             value={customization.buttonStyle}
             onChange={(e) => setCustomization({ ...customization, buttonStyle: e.target.value })}
             size="small"
+            InputLabelProps={{ sx: { ':first-letter': { textTransform: 'uppercase' } } }}
           >
-            <MenuItem value="rounded">Rounded</MenuItem>
-            <MenuItem value="square">Square</MenuItem>
-            <MenuItem value="pill">Pill</MenuItem>
+            <MenuItem value="rounded">{label('rounded')}</MenuItem>
+            <MenuItem value="square">{label('square')}</MenuItem>
+            <MenuItem value="pill">{label('pill')}</MenuItem>
           </TextField>
           <TextField
             select
-            label="Font Family"
+            label={label('font-family')}
             value={customization.fontFamily}
             onChange={(e) => setCustomization({ ...customization, fontFamily: e.target.value })}
             size="small"
+            InputLabelProps={{ sx: { ':first-letter': { textTransform: 'uppercase' } } }}
           >
             <MenuItem value="Roboto">Roboto</MenuItem>
             <MenuItem value="Inter">Inter</MenuItem>
