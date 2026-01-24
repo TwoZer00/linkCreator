@@ -61,5 +61,22 @@
     "font-family": "font family",
     "rounded": "rounded",
     "square": "square",
-    "pill": "pill"
+    "pill": "pill",
+    "link-analytics": "link analytics",
+    "back": "back",
+    "total-visits": "total visits",
+    "top-country": "top country",
+    "top-device": "top device",
+    "created": "created",
+    "modified": "modified",
+    "visits-by-country": "visits by country",
+    "visits-by-device": "visits by device",
+    "detailed-breakdown": "detailed breakdown",
+    "this-month": "this month",
+    "last-month": "last month",
+    "difference": "difference",
+    "growth-rate": "growth rate",
+    "last-month": "last month",
+    "difference": "difference",
+    "growth-rate": "growth rate"
 }

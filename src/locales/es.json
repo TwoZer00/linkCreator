@@ -61,5 +61,19 @@
     "font-family": "familia de fuente",
     "rounded": "redondeado",
     "square": "cuadrado",
-    "pill": "píldora"
+    "pill": "píldora",
+    "link-analytics": "análisis de enlace",
+    "back": "atrás",
+    "total-visits": "visitas totales",
+    "top-country": "país principal",
+    "top-device": "dispositivo principal",
+    "created": "creado",
+    "modified": "modificado",
+    "visits-by-country": "visitas por país",
+    "visits-by-device": "visitas por dispositivo",
+    "detailed-breakdown": "desglose detallado",
+    "this-month": "este mes",
+    "last-month": "mes pasado",
+    "difference": "diferencia",
+    "growth-rate": "tasa de crecimiento"
 }

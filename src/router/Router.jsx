@@ -9,6 +9,7 @@ import { getUserFromId, getUserFromUsername, getUserLinks } from '../firebase/ut
 import UserLinks from '../pages/UserLinks'
 import Home from '../pages/Home'
 import { Home as HomeDashboard } from '../pages/Dashboard/Home'
+import LinkAnalytics from '../pages/Dashboard/LinkAnalytics'
 import Init from '../Init'
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
             element: <HomeDashboard />,
             index: true
 
+          },
+          {
+            path: 'links/:linkId/analytics',
+            element: <LinkAnalytics />
           }
 
         ]

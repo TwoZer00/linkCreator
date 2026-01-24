@@ -5,7 +5,7 @@ import { deleteUserLink, getUserLinks, setUserLink, updateUserLink } from '../..
 import { CustomInput } from '../../components/CustomInput'
 import { label } from '../../locales/locale'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-import { Close, Delete, Edit, DragIndicator } from '@mui/icons-material'
+import { Close, Delete, Edit, DragIndicator, Analytics } from '@mui/icons-material'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
@@ -171,6 +171,7 @@ const SortableLinkElement = ({ link, ...props }) => {
 
 const LinkElement = ({ link, dragProps, ...props }) => {
   const [modal, setModal] = useState({ edit: false, delete: false })
+  const navigate = useNavigate()
   return (
     <>
       <Paper variant='outlined' component={Stack} p={1} direction='row'>
@@ -181,6 +182,9 @@ const LinkElement = ({ link, dragProps, ...props }) => {
           <Typography variant='h2' fontSize={18} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{link.name}</Typography>
           <Typography variant='h3' fontSize={12}>{link.link}</Typography>
         </Box>
+        <IconButton onClick={() => navigate(`/dashboard/links/${link.id}/analytics`)}>
+          <Analytics />
+        </IconButton>
         <IconButton onClick={() => { setModal(value => ({ ...value, delete: true })) }}>
           <Delete />
         </IconButton>
