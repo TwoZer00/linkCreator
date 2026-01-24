@@ -6,12 +6,15 @@ import { label } from '../../locales/locale'
 import { isoAlphaCode2ToCountries } from '../../utils/const'
 import ModalComponent from '../../components/ModalComponent'
 import { OpenInNew } from '@mui/icons-material'
+import { doc, onSnapshot, getFirestore } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
 
 export function Home () {
   const [links, setLinks] = useState([])
   const [modal, setModal] = useState(false)
   const modalContent = useRef('')
   const [data, setData] = useOutletContext()
+  const [prevVisits, setPrevVisits] = useState(0)
   useEffect(() => {
     const fetchLinksData = async () => {
       setData((value) => { return { ...value, loading: true } })
@@ -23,6 +26,36 @@ export function Home () {
       fetchLinksData()
     }
   }, [])
+
+  // Real-time listener for user data updates
+  useEffect(() => {
+    const auth = getAuth()
+    if (auth.currentUser) {
+      const db = getFirestore()
+      const userRef = doc(db, 'user', auth.currentUser.uid)
+      
+      const unsubscribe = onSnapshot(userRef, (doc) => {
+        if (doc.exists()) {
+          const newData = { ...doc.data(), id: doc.id }
+          const newVisits = newData.links?.visits?.total || 0
+          
+          if (newVisits !== prevVisits && prevVisits > 0) {
+            // Trigger animation when visits change
+            setPrevVisits(newVisits)
+          } else if (prevVisits === 0) {
+            setPrevVisits(newVisits)
+          }
+          
+          setData((prevData) => ({
+            ...prevData,
+            user: newData
+          }))
+        }
+      })
+      
+      return () => unsubscribe()
+    }
+  }, [data?.user?.id])
   const handleModal = (target) => {
     setModal(true)
     modalContent.current = target
@@ -38,7 +71,21 @@ export function Home () {
           </Box>
           <Box textAlign='center'>
             <Typography variant='h2' fontSize={22} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{label('visits')}</Typography>
-            <Typography variant='body1' fontSize={16}>{data.user?.links?.visits?.total || 0}</Typography>
+            <Typography 
+              variant='body1' 
+              fontSize={16}
+              key={data.user?.links?.visits?.total || 0}
+              sx={{
+                animation: 'pulse 0.6s ease-in-out',
+                '@keyframes pulse': {
+                  '0%': { transform: 'scale(1)', color: 'text.primary' },
+                  '50%': { transform: 'scale(1.2)', color: 'primary.main' },
+                  '100%': { transform: 'scale(1)', color: 'text.primary' }
+                }
+              }}
+            >
+              {data.user?.links?.visits?.total || 0}
+            </Typography>
           </Box>
         </Stack>
         {/* last links */}
