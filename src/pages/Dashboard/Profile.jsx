@@ -1,4 +1,4 @@
-import { Alert, Button, Stack, Typography } from '@mui/material'
+import { Alert, Button, Stack, Typography, Box, TextField, MenuItem } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { CustomInput } from '../../components/CustomInput'
 import { checkUsernameAvailability, createUser, getUser, updateAvatarImage, updateUser } from '../../firebase/utils'
@@ -16,6 +16,12 @@ export default function Profile () {
   const navigate = useNavigate()
   const [data, setData] = useOutletContext()
   const [socialNetwork, setSocialNetwork] = useState({ youtube: '', facebook: '', x: '', linkedin: '', github: '', instagram: '', pinterest: '' })
+  const [customization, setCustomization] = useState({
+    primaryColor: '#1976d2',
+    backgroundColor: '#ffffff',
+    buttonStyle: 'rounded',
+    fontFamily: 'Roboto'
+  })
   useEffect(() => {
     const fetchUserData = async () => {
       setData(value => { return { ...value, loading: true } })
@@ -23,6 +29,12 @@ export default function Profile () {
         const tempData = data?.user || await getUser()
         setFormData({ ...tempData, avatar: undefined })
         setSocialNetwork(tempData.socialNetwork || { youtube: '', facebook: '', x: '', linkedin: '', github: '', instagram: '', pinterest: '' })
+        setCustomization(tempData.customization || {
+          primaryColor: '#1976d2',
+          backgroundColor: '#ffffff',
+          buttonStyle: 'rounded',
+          fontFamily: 'Roboto'
+        })
         setData(value => { return { ...value, user: tempData } })
       } catch (error) {
         setIsNewUser(true)
@@ -66,12 +78,12 @@ export default function Profile () {
       setErrors({})
       if (isNewUser) {
         console.log('create')
-        const tempUser = await createUser({ socialNetwork, username: formData.username })
+        const tempUser = await createUser({ socialNetwork, customization, username: formData.username })
         setFormData(tempUser)
         setIsNewUser(false)
       } else {
         console.log('update')
-        const tempUserData = { ...formData, socialNetwork }
+        const tempUserData = { ...formData, socialNetwork, customization }
         delete tempUserData.id
         delete tempUserData.email
         try {
@@ -143,6 +155,46 @@ export default function Profile () {
             />
           )
         })}
+        <Typography variant='h2' fontSize={18} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>Visual Customization</Typography>
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+          <TextField
+            label="Primary Color"
+            type="color"
+            value={customization.primaryColor}
+            onChange={(e) => setCustomization({ ...customization, primaryColor: e.target.value })}
+            size="small"
+          />
+          <TextField
+            label="Background Color"
+            type="color"
+            value={customization.backgroundColor}
+            onChange={(e) => setCustomization({ ...customization, backgroundColor: e.target.value })}
+            size="small"
+          />
+          <TextField
+            select
+            label="Button Style"
+            value={customization.buttonStyle}
+            onChange={(e) => setCustomization({ ...customization, buttonStyle: e.target.value })}
+            size="small"
+          >
+            <MenuItem value="rounded">Rounded</MenuItem>
+            <MenuItem value="square">Square</MenuItem>
+            <MenuItem value="pill">Pill</MenuItem>
+          </TextField>
+          <TextField
+            select
+            label="Font Family"
+            value={customization.fontFamily}
+            onChange={(e) => setCustomization({ ...customization, fontFamily: e.target.value })}
+            size="small"
+          >
+            <MenuItem value="Roboto">Roboto</MenuItem>
+            <MenuItem value="Inter">Inter</MenuItem>
+            <MenuItem value="Poppins">Poppins</MenuItem>
+            <MenuItem value="Montserrat">Montserrat</MenuItem>
+          </TextField>
+        </Box>
         <Stack direction='column' gap={2}>
           <Button variant='contained' type='submit'>{label('save')}</Button>
           <Button type='button' variant='contained' onClick={() => { navigate(`/${formData.username || getAuth().currentUser.uid}`) }}>{label('view-page')}</Button>

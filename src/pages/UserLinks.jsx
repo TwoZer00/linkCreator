@@ -5,11 +5,46 @@ import { useLoaderData, useParams, Link as RouterLink } from 'react-router-dom'
 import { setLinkClickCounter } from '../firebase/utils'
 import { label } from '../locales/locale'
 import CustomAvatar from '../components/CustomAvatar'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 export default function UserLinks () {
   const [user, setUser] = useState(useLoaderData())
   const params = useParams()
   const ref = useRef({ youtube: ['https://youtube.com/@', <YouTube fontSize='large' />], facebook: ['https://facebook.com/', <Facebook fontSize='large' />], x: ['https://twitter.com/', <X fontSize='large' />], linkedin: ['https://linkedin/', <LinkedIn fontSize='large' />], github: ['https://github.com/', <GitHub fontSize='large' />], instagram: ['https://instagram.com/', <Instagram fontSize='large' />], pinterest: ['https://pinterest.com/', <Pinterest fontSize='large' />] })
+  
+  const customization = user?.customization || {
+    primaryColor: '#1976d2',
+    backgroundColor: '#ffffff',
+    buttonStyle: 'rounded',
+    fontFamily: 'Roboto',
+    layout: 'centered'
+  }
+  
+  const customTheme = createTheme({
+    palette: {
+      primary: {
+        main: customization.primaryColor,
+      },
+      background: {
+        default: customization.backgroundColor,
+      },
+    },
+    typography: {
+      fontFamily: customization.fontFamily,
+    },
+  })
+  
+  const getButtonStyle = () => {
+    const baseStyle = { fontWeight: 500, fontSize: 18 }
+    switch (customization.buttonStyle) {
+      case 'square':
+        return { ...baseStyle, borderRadius: 0 }
+      case 'pill':
+        return { ...baseStyle, borderRadius: 25 }
+      default:
+        return baseStyle
+    }
+  }
   const handleClick = ({ link, id }) => {
     try {
       setLinkClickCounter(id)
@@ -20,9 +55,9 @@ export default function UserLinks () {
     }
   }
   return (
-    <>
+    <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Box width='100dvw' height='100dvh'>
+      <Box width='100dvw' height='100dvh' sx={{ backgroundColor: customization.backgroundColor }}>
         <Stack direction='column' justifyContent='center' alignItems='center' width='100%' height='100%' gap={1} p={1}>
           <Stack direction='column' justifyContent='center' alignItems='center' width='100%' py={2} gap={1} flex={0}>
             <CustomAvatar src={user?.avatar} alt={user?.username} sx={{ width: 80, height: 'auto', aspectRatio: 1 }} />
@@ -46,11 +81,11 @@ export default function UserLinks () {
                     return new Date(a.creationTime) - new Date(b.creationTime)
                   })
                   ?.map((link) => {
-                return (
-                  <Button key={link.id} color='inherit' fullWidth variant='outlined' sx={{ fontWeight: 500, fontSize: 18 }} onClick={() => { handleClick(link) }}>
-                    {link.name}
-                  </Button>
-                )
+                    return (
+                      <Button key={link.id} color='primary' fullWidth variant='outlined' sx={getButtonStyle()} onClick={() => { handleClick(link) }}>
+                        {link.name}
+                      </Button>
+                    )
               })
               : <Typography variant='h2' fontSize={18} fontStyle='italic' color='GrayText' sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{label('no-links')}</Typography>}
           </Stack>
@@ -58,7 +93,7 @@ export default function UserLinks () {
         </Stack>
         <Warning />
       </Box>
-    </>
+    </ThemeProvider>
   )
 }
 const Warning = () => {
