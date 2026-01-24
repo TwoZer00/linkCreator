@@ -39,7 +39,7 @@ export default function Dashboard () {
 
   return (
     <Stack direction='column' height='100dvh'>
-      <Box flex={1} p={1}>
+      <Box flex={1} p={1} width="100%" maxWidth={"lg"} mx={"auto"}>
         <Outlet context={[data, setData]} />
       </Box>
       <Paper sx={{ position: 'sticky', bottom: 0, left: 0, right: 0, zIndex: 1, backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(64px)' }} elevation={3}>
