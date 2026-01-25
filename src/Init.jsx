@@ -5,6 +5,11 @@ export default function Init () {
   const theme = createTheme(
     {
       palette: {
+        primary: {
+          main: '#009688',
+          light: '#52c7b8',
+          dark: '#00675b'
+        },
         info: {
           main: '#888888ff'
         }

@@ -202,7 +202,7 @@ export default function Profile () {
         <Stack direction='column' gap={2}>
           <Button variant='contained' type='submit'>{label('save')}</Button>
           <Button type='button' variant='contained' component='a' href={`/${formData.username || getAuth().currentUser.uid}`} target='_blank' rel='noopener noreferrer'>{label('view-page')}</Button>
-          <Button variant='text' color='error' size='small' type='button' onClick={async () => { await signOut(getAuth()); navigate('/') }}>{label('logout')}</Button>
+          <Button variant='text' color='error' size='small' type='button' onClick={async () => { await signOut(getAuth()); window.scrollTo(0, 0); navigate('/') }}>{label('logout')}</Button>
         </Stack>
       </Stack>
     </>

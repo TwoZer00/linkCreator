@@ -1,16 +1,26 @@
 import { Alert, AlertTitle, Box, Button, CssBaseline, Link, Paper, Stack, Typography } from '@mui/material'
 import { Facebook, GitHub, Instagram, LinkedIn, Pinterest, X, YouTube } from '@mui/icons-material/'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useLoaderData, useParams, Link as RouterLink } from 'react-router-dom'
 import { setLinkClickCounter } from '../firebase/utils'
 import { label } from '../locales/locale'
 import CustomAvatar from '../components/CustomAvatar'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { Helmet } from 'react-helmet-async'
 
 export default function UserLinks () {
   const [user, setUser] = useState(useLoaderData())
   const params = useParams()
   const ref = useRef({ youtube: ['https://youtube.com/@', <YouTube fontSize='large' />], facebook: ['https://facebook.com/', <Facebook fontSize='large' />], x: ['https://twitter.com/', <X fontSize='large' />], linkedin: ['https://linkedin/', <LinkedIn fontSize='large' />], github: ['https://github.com/', <GitHub fontSize='large' />], instagram: ['https://instagram.com/', <Instagram fontSize='large' />], pinterest: ['https://pinterest.com/', <Pinterest fontSize='large' />] })
+  
+  // SEO data
+  const pageTitle = `${user?.username || 'User'} - LinkCreator Profile`
+  const pageDescription = user?.description 
+    ? `${user.description} - Check out ${user.username}'s links and social media profiles.`
+    : `Visit ${user?.username || 'this user'}'s LinkCreator profile to access all their important links in one place.`
+  const pageUrl = `${window.location.origin}/${user?.username || params.user}`
+  const linksList = user?.links?.map(link => link.name).join(', ') || ''
+  const socialNetworks = Object.keys(user?.socialNetwork || {}).filter(key => user?.socialNetwork[key]).join(', ')
   
   const customization = user?.customization || {
     primaryColor: '#1976d2',
@@ -55,7 +65,54 @@ export default function UserLinks () {
     }
   }
   return (
-    <ThemeProvider theme={customTheme}>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={`${user?.username}, links, social media, profile, ${linksList}, ${socialNetworks}`} />
+        <meta name="author" content={user?.username} />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="profile" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={user?.avatar ? `${window.location.origin}/api/avatar/${user.avatar}` : `${window.location.origin}/default-avatar.png`} />
+        <meta property="profile:username" content={user?.username} />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={user?.avatar ? `${window.location.origin}/api/avatar/${user.avatar}` : `${window.location.origin}/default-avatar.png`} />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": user?.username,
+            "description": user?.description,
+            "url": pageUrl,
+            "image": user?.avatar ? `${window.location.origin}/api/avatar/${user.avatar}` : undefined,
+            "sameAs": Object.keys(user?.socialNetwork || {}).filter(key => user?.socialNetwork[key]).map(key => {
+              const baseUrls = {
+                youtube: 'https://youtube.com/@',
+                facebook: 'https://facebook.com/',
+                x: 'https://twitter.com/',
+                linkedin: 'https://linkedin.com/in/',
+                github: 'https://github.com/',
+                instagram: 'https://instagram.com/',
+                pinterest: 'https://pinterest.com/'
+              }
+              return baseUrls[key] + user.socialNetwork[key]
+            })
+          })}
+        </script>
+      </Helmet>
+      
+      <ThemeProvider theme={customTheme}>
       <CssBaseline />
       <Box width='100dvw' height='100dvh' sx={{ backgroundColor: customization.backgroundColor }}>
         <Stack direction='column' justifyContent='center' alignItems='center' width='100%' height='100%' gap={1} p={1}>
@@ -94,6 +151,7 @@ export default function UserLinks () {
         <Warning />
       </Box>
     </ThemeProvider>
+    </>
   )
 }
 const Warning = () => {
