@@ -1,7 +1,7 @@
 import { FormControl, FormHelperText, InputLabel, OutlinedInput } from '@mui/material'
 import PropTypes from 'prop-types'
 
-export const CustomInput = ({ error, disabled = false, fullWidth = false, label, id, ...props }) => {
+export const CustomInput = ({ error, disabled = false, fullWidth = true, label, id, ...props }) => {
   return (
     <FormControl disabled={disabled} variant='outlined' fullWidth={fullWidth}>
       <InputLabel htmlFor={id} error={Boolean(error)} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>

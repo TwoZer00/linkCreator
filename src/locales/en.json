@@ -94,5 +94,13 @@
     "mobile-description": "Optimized for all devices",
     "cta-title": "Ready to create your link page?",
     "cta-subtitle": "Join thousands of users who trust LinkCreator for their link management",
-    "start-building": "Start Building Now"
+    "start-building": "Start Building Now",
+    "reset-password": "Reset Password",
+    "forgot-password": "Forgot Password?",
+    "reset-password-subtitle": "Enter your email address and we'll send you a link to reset your password",
+    "send-reset-email": "Send Reset Email",
+    "sending": "Sending...",
+    "check-email": "Check Your Email",
+    "reset-email-sent": "We've sent a password reset link to your email address",
+    "back-to-login": "Back to Login"
 }

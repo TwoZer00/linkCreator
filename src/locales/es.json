@@ -93,5 +93,13 @@
     "mobile-description": "Optimizado para todos los dispositivos",
     "cta-title": "¿Listo para crear tu página de enlaces?",
     "cta-subtitle": "Únete a miles de usuarios que confían en LinkCreator para la gestión de sus enlaces",
-    "start-building": "Comenzar a Construir Ahora"
+    "start-building": "Comenzar a Construir Ahora",
+    "reset-password": "Restablecer Contraseña",
+    "forgot-password": "¿Olvidaste tu Contraseña?",
+    "reset-password-subtitle": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña",
+    "send-reset-email": "Enviar Correo de Restablecimiento",
+    "sending": "Enviando...",
+    "check-email": "Revisa tu Correo",
+    "reset-email-sent": "Hemos enviado un enlace de restablecimiento de contraseña a tu dirección de correo",
+    "back-to-login": "Volver al Inicio de Sesión"
 }

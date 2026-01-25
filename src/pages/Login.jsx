@@ -52,6 +52,9 @@ export default function Login () {
         <CustomInput id='email' label={label('email')} name='email' type='email' error={error?.email} required autoComplete='email' autoFocus />
         <CustomInput id='password' label={label('password')} name='password' type='password' error={error?.password} required autoComplete='current-password' />
         <Button variant='contained' type='submit' fullWidth>{label('login')}</Button>
+        <Typography variant='body2' textAlign='center'>
+          <Link component={LinkRouterDom} to='/reset-password'>{label('forgot-password')}</Link>
+        </Typography>
         <Link component={LinkRouterDom} to='/register' replace variant='body1' textAlign='center' sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{label('register-here')}</Link>
       </Stack>
     </>
