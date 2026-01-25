@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Snackbar, Stack } from '@mui/material'
-import { deleteUserLink, getUserLinks, setUserLink, updateUserLink } from '../../firebase/utils'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Snackbar, Stack, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
+import { deleteUserLink, getUserLinks, setUserLink, updateUserLink, getLinkHealthReports, dismissLinkHealthReports } from '../../firebase/utils'
 import { CustomInput } from '../../components/CustomInput'
 import { label } from '../../locales/locale'
 import { useNavigate, useOutletContext } from 'react-router-dom'
-import { Close, Delete, Edit, DragIndicator, Analytics } from '@mui/icons-material'
+import { Close, Delete, Edit, DragIndicator, Analytics, ExpandMore, Warning, NotificationsActive, Clear } from '@mui/icons-material'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
@@ -82,6 +82,7 @@ export default function Links () {
 }
 const LinksList = ({ ...props }) => {
   const [links, setLinks] = useState([])
+  const [linkReports, setLinkReports] = useState({})
   const [data, setData] = useOutletContext()
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -89,6 +90,11 @@ const LinksList = ({ ...props }) => {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
+
+  // Separate healthy and broken links
+  const healthyLinks = links.filter(link => link.health?.status !== 'broken')
+  const brokenLinks = links.filter(link => link.health?.status === 'broken')
+  const linksWithReports = links.filter(link => linkReports[link.id]?.length > 0)
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -102,11 +108,26 @@ const LinksList = ({ ...props }) => {
         return new Date(a.creationTime) - new Date(b.creationTime)
       })
       setLinks(sortedLinks)
+      
+      // Fetch health reports for each link
+      const reports = {}
+      for (const link of sortedLinks) {
+        try {
+          const linkReports = await getLinkHealthReports(link.id)
+          if (linkReports.length > 0) {
+            reports[link.id] = linkReports
+          }
+        } catch (error) {
+          console.error('Failed to fetch reports for link:', link.id, error)
+        }
+      }
+      setLinkReports(reports)
+      
       setData((value) => { return { ...value, userLinks: sortedLinks, loading: false } })
     }
 
     fetchLinks()
-  })
+  }, [])
 
   const handleDragEnd = (event) => {
     const { active, over } = event
@@ -133,19 +154,68 @@ const LinksList = ({ ...props }) => {
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <Box flex={1} height='100%' overflow='auto' display='flex' flexDirection='column' gap={2}>
-        <SortableContext items={links.map(link => link.id)} strategy={verticalListSortingStrategy}>
-          {
-            links?.map((link, index) => {
-              return (
-                <SortableLinkElement link={link} key={link.id} {...props} />
-              )
-            })
-          }
-        </SortableContext>
-      </Box>
-    </DndContext>
+    <>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <Box flex={1} height='100%' overflow='auto' display='flex' flexDirection='column' gap={2}>
+          {/* Links with Reports Section */}
+          {linksWithReports.length > 0 && (
+            <Accordion sx={{ border: '1px solid orange', mb: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Stack direction='row' alignItems='center' gap={1}>
+                  <NotificationsActive color='warning' />
+                  <Typography>Link Reports ({linksWithReports.length})</Typography>
+                </Stack>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Stack gap={1}>
+                  {linksWithReports.map(link => (
+                    <ReportedLinkElement 
+                      key={link.id} 
+                      link={link} 
+                      reports={linkReports[link.id] || []} 
+                      onDismiss={async () => {
+                        await dismissLinkHealthReports(link.id)
+                        setLinkReports(prev => ({ ...prev, [link.id]: [] }))
+                      }}
+                      {...props} 
+                    />
+                  ))}
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+          )}
+          
+          <SortableContext items={healthyLinks.map(link => link.id)} strategy={verticalListSortingStrategy}>
+            {
+              healthyLinks?.map((link, index) => {
+                return (
+                  <SortableLinkElement link={link} key={link.id} {...props} />
+                )
+              })
+            }
+          </SortableContext>
+          
+          {/* Broken Links Section */}
+          {brokenLinks.length > 0 && (
+            <Accordion sx={{ mt: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Stack direction='row' alignItems='center' gap={1}>
+                  <Warning color='error' />
+                  <Typography>{label('hidden-links')} ({brokenLinks.length})</Typography>
+                </Stack>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Stack gap={1}>
+                  {brokenLinks.map(link => (
+                    <BrokenLinkElement key={link.id} link={link} {...props} />
+                  ))}
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+          )}
+        </Box>
+      </DndContext>
+    </>
   )
 }
 const SortableLinkElement = ({ link, ...props }) => {
@@ -166,6 +236,76 @@ const SortableLinkElement = ({ link, ...props }) => {
     <div ref={setNodeRef} style={style}>
       <LinkElement link={link} dragProps={{ attributes, listeners }} {...props} />
     </div>
+  )
+}
+
+const ReportedLinkElement = ({ link, reports, onDismiss, ...props }) => {
+  const [modal, setModal] = useState({ edit: false, delete: false })
+  const brokenReports = reports.filter(r => r.status === 'broken')
+  const healthyReports = reports.filter(r => r.status === 'healthy')
+  
+  return (
+    <>
+      <Paper variant='outlined' component={Stack} p={2} sx={{ border: '1px solid orange' }}>
+        <Stack direction='row' alignItems='center' gap={1} mb={1}>
+          <Box flex={1}>
+            <Typography variant='h2' fontSize={18}>{link.name}</Typography>
+            <Typography variant='h3' fontSize={12} color='text.secondary'>{link.link}</Typography>
+          </Box>
+          <IconButton onClick={onDismiss} title='Dismiss all reports'>
+            <Clear />
+          </IconButton>
+          <IconButton onClick={() => setModal(value => ({ ...value, edit: true }))}>
+            <Edit />
+          </IconButton>
+          <IconButton onClick={() => setModal(value => ({ ...value, delete: true }))}>
+            <Delete />
+          </IconButton>
+        </Stack>
+        
+        <Stack gap={1}>
+          {brokenReports.length > 0 && (
+            <Typography variant='body2' color='error'>
+              {brokenReports.length} user(s) reported this link as broken
+            </Typography>
+          )}
+          {healthyReports.length > 0 && (
+            <Typography variant='body2' color='success.main'>
+              {healthyReports.length} user(s) confirmed this link works
+            </Typography>
+          )}
+        </Stack>
+      </Paper>
+      <DeleteLink action={props.deleteAction} open={modal.delete} setOpen={setModal} link={link} />
+      <EditLink open={modal.edit} setOpen={setModal} link={link} />
+    </>
+  )
+}
+
+const BrokenLinkElement = ({ link, ...props }) => {
+  const [modal, setModal] = useState({ edit: false, delete: false })
+  const navigate = useNavigate()
+  
+  return (
+    <>
+      <Paper variant='outlined' component={Stack} p={1} direction='row' sx={{ opacity: 0.7 }}>
+        <Box flex={1}>
+          <Typography variant='h2' fontSize={18} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{link.name}</Typography>
+          <Typography variant='h3' fontSize={12} color='error'>{link.link}</Typography>
+          <Typography variant='caption' color='error'>
+            {link.health?.errorMessage || 'Link is broken'}
+          </Typography>
+        </Box>
+        <IconButton onClick={() => { setModal((value) => ({ ...value, edit: true })) }}>
+          <Edit />
+        </IconButton>
+        <IconButton onClick={() => { setModal(value => ({ ...value, delete: true })) }}>
+          <Delete />
+        </IconButton>
+      </Paper>
+      <DeleteLink action={props.deleteAction} open={modal.delete} setOpen={setModal} link={link} />
+      <EditLink open={modal.edit} setOpen={setModal} link={link} />
+    </>
   )
 }
 
@@ -334,7 +474,16 @@ const InputLink = ({ updatedLink = [] }) => {
       let resolveLink = {}
       try {
         if (updatedLink[0]) {
-          resolveLink = await updateUserLink({ ...tempLink, id: updatedLink[0].id })
+          // Reset health status when editing a link
+          const linkWithResetHealth = {
+            ...tempLink,
+            health: {
+              status: 'unknown',
+              lastChecked: null,
+              errorMessage: null
+            }
+          }
+          resolveLink = await updateUserLink({ ...linkWithResetHealth, id: updatedLink[0].id })
           setData((value) => {
             const tempLinks = value.userLinks || []
             return {

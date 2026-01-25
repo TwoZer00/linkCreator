@@ -113,5 +113,18 @@
     "settings": "Settings",
     "theme": "Theme",
     "system-theme": "System",
-    "preview-profile": "Preview Profile"
+    "preview-profile": "Preview Profile",
+    "hidden-links": "Hidden Links",
+    "report-broken": "Report Broken Link",
+    "link-reported": "Thank you! Link reported to owner.",
+    "did-link-work": "Did the link work?",
+    "link-validation-message": "You just clicked '{linkName}'. Did it work as expected?",
+    "no-issues": "Report Problem",
+    "worked-perfectly": "Worked Perfectly",
+    "link-confirmed": "Thanks for confirming! This helps keep links reliable.",
+    "link-reports": "Link Reports",
+    "dismiss-reports": "Dismiss Reports",
+    "users-reported-broken": "{count} user(s) reported this link as broken",
+    "users-confirmed-working": "{count} user(s) confirmed this link works",
+    "manage": "Manage"
 }

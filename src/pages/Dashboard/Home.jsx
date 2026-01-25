@@ -1,13 +1,14 @@
-import { Box, Button, DialogContent, DialogTitle, Link, List, ListItem, ListItemText, ListSubheader, Paper, Stack, Typography } from '@mui/material'
+import { Box, Button, DialogContent, DialogTitle, Link, List, ListItem, ListItemText, ListSubheader, Paper, Stack, Typography, Alert, AlertTitle, Snackbar } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { getUserLinks, getUserLinksOfLastMonth } from '../../firebase/utils'
 import { useOutletContext } from 'react-router-dom'
 import { label } from '../../locales/locale'
 import { isoAlphaCode2ToCountries } from '../../utils/const'
 import ModalComponent from '../../components/ModalComponent'
-import { OpenInNew } from '@mui/icons-material'
+import { OpenInNew, Warning } from '@mui/icons-material'
 import { doc, onSnapshot, getFirestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
+import { checkForReportedLinks, subscribeToReports } from '../../firebase/reportUtils'
 
 export function Home () {
   const [links, setLinks] = useState([])
@@ -15,11 +16,17 @@ export function Home () {
   const modalContent = useRef('')
   const [data, setData] = useOutletContext()
   const [prevVisits, setPrevVisits] = useState(0)
+  const [reportedLinks, setReportedLinks] = useState([])
+  const [notification, setNotification] = useState(null)
+  const [prevReportCount, setPrevReportCount] = useState(0)
   useEffect(() => {
     const fetchLinksData = async () => {
       setData((value) => { return { ...value, loading: true } })
       const userLinks = data?.userLinks || await getUserLinksOfLastMonth()
+      const reported = await checkForReportedLinks()
       setLinks(userLinks)
+      setReportedLinks(reported)
+      setPrevReportCount(reported.length) // Initialize count
       setData((value) => { return { ...value, loading: false, userLinks } })
     }
     if (links.length === 0 && data?.loading != true) {
@@ -34,7 +41,7 @@ export function Home () {
       const db = getFirestore()
       const userRef = doc(db, 'user', auth.currentUser.uid)
       
-      const unsubscribe = onSnapshot(userRef, (doc) => {
+      const unsubscribeUser = onSnapshot(userRef, (doc) => {
         if (doc.exists()) {
           const newData = { ...doc.data(), id: doc.id }
           const newVisits = newData.links?.visits?.total || 0
@@ -53,7 +60,16 @@ export function Home () {
         }
       })
       
-      return () => unsubscribe()
+      // Real-time listener for health reports
+      const unsubscribeReports = subscribeToReports(auth.currentUser.uid, (reportedLinks) => {
+        setReportedLinks(reportedLinks)
+        setPrevReportCount(reportedLinks.length)
+      })
+      
+      return () => {
+        unsubscribeUser()
+        unsubscribeReports()
+      }
     }
   }, [data?.user?.id])
   const handleModal = (target) => {
@@ -63,6 +79,22 @@ export function Home () {
   return (
     <>
       <Stack width='100%' height='100%' gap={2}>
+        {/* REPORTED LINKS ALERT */}
+        {reportedLinks.length > 0 && (
+          <Alert severity='warning' variant='outlined' 
+            action={
+              <Button color='inherit' size='small' href='/dashboard/links'>
+                {label('manage')}
+              </Button>
+            }
+          >
+            <AlertTitle>
+              <Warning sx={{ mr: 1 }} />
+              Link Reports
+            </AlertTitle>
+            {reportedLinks.length} link(s) have been reported as broken by visitors.
+          </Alert>
+        )}
         {/* HEADER */}
         <Stack component={Paper} variant='outlined' p={1} justifyContent='space-evenly' direction='row'>
           <Box textAlign='center'>
@@ -180,6 +212,18 @@ export function Home () {
         </Stack>
       </Stack>
       <ModalComponent open={modal} setOpen={setModal} children={<DetailView dataRef={modalContent.current} />} />
+      
+      {/* In-app notification */}
+      <Snackbar
+        open={false}
+        autoHideDuration={6000}
+        onClose={() => setNotification(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert severity={notification?.severity || 'info'} onClose={() => setNotification(null)}>
+          {notification?.message}
+        </Alert>
+      </Snackbar>
     </>
   )
 }

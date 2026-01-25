@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth'
-import { Timestamp, Transaction, collection, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, runTransaction, setDoc, updateDoc, where } from 'firebase/firestore'
+import { Timestamp, Transaction, collection, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, runTransaction, setDoc, updateDoc, where, writeBatch } from 'firebase/firestore'
 import { app } from '../firebase/init'
 import { UserAvailabilityError, UserNotFoundError } from '../errors/userAvailability'
 import { getStorage, ref, uploadBytes } from 'firebase/storage'
@@ -187,13 +187,17 @@ export const getUserFromUsername = async (username) => {
     return { ...querySnapshot.docs[0].data(), id: querySnapshot.docs[0].id }
   }
 }
-export const setLinkClickCounter = async (id) => {
-  const visitCollection = collection(db, `user/${auth.currentUser.uid}/link/${id}/visit`)
+export const setLinkClickCounter = async (id, userId = null) => {
+  const targetUserId = userId || (auth.currentUser ? auth.currentUser.uid : null)
+  if (!targetUserId) {
+    throw new Error('No user ID available')
+  }
+  const visitCollection = collection(db, `user/${targetUserId}/link/${id}/visit`)
   const visitRef = doc(visitCollection)
   const { location, ip } = await getLocationFromIp()
   await runTransaction(db, async (transaction) => {
-    const counter = await transaction.get(doc(db, `user/${auth.currentUser.uid}/link`, id))
-    const linksData = (await transaction.get(doc(db, 'user', auth.currentUser.uid))).data().links
+    const counter = await transaction.get(doc(db, `user/${targetUserId}/link`, id))
+    const linksData = (await transaction.get(doc(db, 'user', targetUserId))).data().links
     if (!counter.exists()) {
       throw new Error('Link does not exist')
     }
@@ -221,7 +225,7 @@ export const setLinkClickCounter = async (id) => {
     } else {
       visits.byDevice.push({ device, count: 1, creationTime: new Date() })
     }
-    transaction.update(doc(db, `user/${auth.currentUser.uid}/link`, id), { visits })
+    transaction.update(doc(db, `user/${targetUserId}/link`, id), { visits })
     const totalVisits = {
       ...(linksData.visits || {}),
       total: (linksData.visits?.total || 0) + 1
@@ -248,7 +252,7 @@ export const setLinkClickCounter = async (id) => {
     } else {
       totalVisits.byDevice.push({ device, count: 1 })
     }
-    transaction.update(doc(db, 'user', auth.currentUser.uid), { links: { ...linksData, visits: totalVisits } })
+    transaction.update(doc(db, 'user', targetUserId), { links: { ...linksData, visits: totalVisits } })
   })
 }
 export const getLocationFromIp = async () => {
@@ -260,4 +264,35 @@ export const getVisitsOfLink = async (link) => {
   const visitCollection = collection(db, `user/${auth.currentUser.uid}/link/${link}/visit`)
   const querySnapshot = await getDocs(visitCollection)
   return { id: link, visits: [...querySnapshot.docs.map((doc) => doc.data())] }
+}
+
+export const reportLinkHealth = async (linkId, userId, reportData) => {
+  const { location, ip } = await getLocationFromIp()
+  const reportCollection = collection(db, `user/${userId}/link/${linkId}/healthReports`)
+  const reportId = `${reportData.fingerprint}_${ip}`
+  const reportRef = doc(reportCollection, reportId)
+  await setDoc(reportRef, {
+    ...reportData,
+    ip,
+    location,
+    creationTime: Timestamp.fromDate(new Date()),
+    id: reportId
+  }, { merge: true })
+  return reportId
+}
+
+export const getLinkHealthReports = async (linkId) => {
+  const reportCollection = collection(db, `user/${auth.currentUser.uid}/link/${linkId}/healthReports`)
+  const querySnapshot = await getDocs(reportCollection)
+  return querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+}
+
+export const dismissLinkHealthReports = async (linkId) => {
+  const reportCollection = collection(db, `user/${auth.currentUser.uid}/link/${linkId}/healthReports`)
+  const querySnapshot = await getDocs(reportCollection)
+  const batch = writeBatch(db)
+  querySnapshot.docs.forEach((doc) => {
+    batch.delete(doc.ref)
+  })
+  await batch.commit()
 }

@@ -1,10 +1,11 @@
 import { Ballot, Home, Person } from '@mui/icons-material'
-import { Backdrop, BottomNavigation, BottomNavigationAction, Box, LinearProgress, Paper, Stack } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Backdrop, BottomNavigation, BottomNavigationAction, Box, LinearProgress, Paper, Stack, Snackbar, Alert } from '@mui/material'
+import { useEffect, useState, useRef } from 'react'
 import { Link, Outlet, useLocation, useOutletContext } from 'react-router-dom'
 import { label } from '../../locales/locale'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { getUserFromId } from '../../firebase/utils'
+import { subscribeToReports, checkForReportedLinks } from '../../firebase/reportUtils'
 
 export default function Dashboard () {
   const location = useLocation()

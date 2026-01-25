@@ -112,5 +112,18 @@
     "settings": "Configuración",
     "theme": "Tema",
     "system-theme": "Sistema",
-    "preview-profile": "Vista Previa del Perfil"
+    "preview-profile": "Vista Previa del Perfil",
+    "hidden-links": "Enlaces Ocultos",
+    "report-broken": "Reportar Enlace Roto",
+    "link-reported": "¡Gracias! Enlace reportado al propietario.",
+    "did-link-work": "¿Funcionó el enlace?",
+    "link-validation-message": "Acabas de hacer clic en '{linkName}'. ¿Funcionó como esperabas?",
+    "no-issues": "Reportar Problema",
+    "worked-perfectly": "Funcionó Perfectamente",
+    "link-confirmed": "¡Gracias por confirmar! Esto ayuda a mantener los enlaces confiables.",
+    "link-reports": "Reportes de Enlaces",
+    "dismiss-reports": "Descartar Reportes",
+    "users-reported-broken": "{count} usuario(s) reportaron este enlace como roto",
+    "users-confirmed-working": "{count} usuario(s) confirmaron que este enlace funciona",
+    "manage": "Gestionar"
 }
