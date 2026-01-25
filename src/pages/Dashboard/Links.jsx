@@ -99,7 +99,18 @@ const LinksList = ({ ...props }) => {
   useEffect(() => {
     const fetchLinks = async () => {
       setData((value) => { return { ...value, loading: true } })
-      const tempData = data?.userLinks || await getUserLinks()
+      
+      // Check if we need to fetch all links or if we already have them
+      let tempData
+      if (data?.allUserLinks) {
+        // Use cached all links if available
+        tempData = data.allUserLinks
+      } else {
+        // Fetch all links and cache them
+        tempData = await getUserLinks()
+        setData((value) => { return { ...value, allUserLinks: tempData } })
+      }
+      
       // Sort by order attribute, fallback to creation time
       const sortedLinks = tempData.sort((a, b) => {
         if (a.order !== undefined && b.order !== undefined) {
@@ -123,7 +134,7 @@ const LinksList = ({ ...props }) => {
       }
       setLinkReports(reports)
       
-      setData((value) => { return { ...value, userLinks: sortedLinks, loading: false } })
+      setData((value) => { return { ...value, loading: false } })
     }
 
     fetchLinks()

@@ -15,7 +15,6 @@ export function Home () {
   const [modal, setModal] = useState(false)
   const modalContent = useRef('')
   const [data, setData] = useOutletContext()
-  const [prevVisits, setPrevVisits] = useState(0)
   const [reportedLinks, setReportedLinks] = useState([])
   const [notification, setNotification] = useState(null)
   const [prevReportCount, setPrevReportCount] = useState(0)
@@ -46,13 +45,6 @@ export function Home () {
           const newData = { ...doc.data(), id: doc.id }
           const newVisits = newData.links?.visits?.total || 0
           
-          if (newVisits !== prevVisits && prevVisits > 0) {
-            // Trigger animation when visits change
-            setPrevVisits(newVisits)
-          } else if (prevVisits === 0) {
-            setPrevVisits(newVisits)
-          }
-          
           setData((prevData) => ({
             ...prevData,
             user: newData
@@ -71,7 +63,7 @@ export function Home () {
         unsubscribeReports()
       }
     }
-  }, [data?.user?.id])
+  }, [])
   const handleModal = (target) => {
     setModal(true)
     modalContent.current = target
@@ -106,15 +98,6 @@ export function Home () {
             <Typography 
               variant='body1' 
               fontSize={16}
-              key={data.user?.links?.visits?.total || 0}
-              sx={{
-                animation: 'pulse 0.6s ease-in-out',
-                '@keyframes pulse': {
-                  '0%': { transform: 'scale(1)', color: 'text.primary' },
-                  '50%': { transform: 'scale(1.2)', color: 'primary.main' },
-                  '100%': { transform: 'scale(1)', color: 'text.primary' }
-                }
-              }}
             >
               {data.user?.links?.visits?.total || 0}
             </Typography>
