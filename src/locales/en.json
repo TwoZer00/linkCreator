@@ -112,5 +112,6 @@
     "light-mode": "Light Mode",
     "settings": "Settings",
     "theme": "Theme",
-    "system-theme": "System"
+    "system-theme": "System",
+    "preview-profile": "Preview Profile"
 }

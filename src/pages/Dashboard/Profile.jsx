@@ -1,13 +1,14 @@
 import { Alert, Button, Stack, Typography, Box, TextField, MenuItem } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { CustomInput } from '../../components/CustomInput'
-import { checkUsernameAvailability, createUser, getUser, updateAvatarImage, updateUser } from '../../firebase/utils'
+import { checkUsernameAvailability, createUser, getUser, updateAvatarImage, updateUser, getUserLinks } from '../../firebase/utils'
 import { getAuth, signOut } from 'firebase/auth'
 import { label } from '../../locales/locale'
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom'
 import CustomAvatar from '../../components/CustomAvatar'
 import { useTheme } from '@emotion/react'
 import { useTheme as useThemeContext } from '../../contexts/ThemeContext'
+import ProfilePreview from '../../components/ProfilePreview'
 
 export default function Profile () {
   const theme = useTheme()
@@ -24,6 +25,8 @@ export default function Profile () {
     buttonStyle: 'rounded',
     fontFamily: 'Roboto'
   })
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [userLinks, setUserLinks] = useState([])
   useEffect(() => {
     const fetchUserData = async () => {
       setData(value => { return { ...value, loading: true } })
@@ -38,6 +41,10 @@ export default function Profile () {
           fontFamily: 'Roboto'
         })
         setData(value => { return { ...value, user: tempData } })
+        
+        // Fetch user links for preview
+        const links = await getUserLinks()
+        setUserLinks(links)
       } catch (error) {
         setIsNewUser(true)
       } finally {
@@ -216,10 +223,21 @@ export default function Profile () {
         </TextField>
         <Stack direction='column' gap={2}>
           <Button variant='contained' type='submit'>{label('save')}</Button>
+          <Button variant='outlined' onClick={() => setPreviewOpen(true)}>
+            {label('preview-profile')}
+          </Button>
           <Button type='button' variant='contained' component='a' href={`/${formData.username || getAuth().currentUser.uid}`} target='_blank' rel='noopener noreferrer'>{label('view-page')}</Button>
           <Button variant='text' color='error' size='small' type='button' onClick={async () => { await signOut(getAuth()); window.scrollTo(0, 0); navigate('/') }}>{label('logout')}</Button>
         </Stack>
       </Stack>
+      
+      <ProfilePreview
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        user={{ ...formData, socialNetwork }}
+        links={userLinks}
+        customization={customization}
+      />
     </>
 
   )
