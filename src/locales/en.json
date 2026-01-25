@@ -102,5 +102,10 @@
     "sending": "Sending...",
     "check-email": "Check Your Email",
     "reset-email-sent": "We've sent a password reset link to your email address",
-    "back-to-login": "Back to Login"
+    "back-to-login": "Back to Login",
+    "verify-email": "Verify Your Email",
+    "verify-email-subtitle": "We've sent a verification email to your address. Please check your email and click the verification link to continue.",
+    "verification-email-sent": "Verification email sent successfully",
+    "resend-verification": "Resend Verification Email",
+    "sign-out": "Sign Out"
 }

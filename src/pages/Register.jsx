@@ -34,7 +34,7 @@ export default function Register () {
     if (form.checkValidity()) {
       try {
         await registerEmailPassword(userRegister)
-        navigate('/dashboard')
+        navigate('/verify-email')
       } catch (error) {
         if ((error.code).replace('/', '-').split('-').includes('email')) { setError({ ...error, email: label(error.code) }) } else if ((error.code).replace('/', '-').split('-').includes('password')) { setError({ ...error, password: label(error.code) }) } else if ((error.code).replace('/', '-').split('-').includes('username')) { setError({ ...error, username: label(error.code) }) } else { setError({ ...error, other: label(error.code) }) }
       } finally {

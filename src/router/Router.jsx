@@ -2,6 +2,7 @@ import { createBrowserRouter, redirect } from 'react-router-dom'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import ResetPassword from '../pages/ResetPassword'
+import EmailVerification from '../pages/EmailVerification'
 import Dashboard from '../pages/Dashboard/Dashboard'
 import Links from '../pages/Dashboard/Links'
 import Profile from '../pages/Dashboard/Profile'
@@ -45,6 +46,20 @@ export const router = createBrowserRouter([
         element: <ResetPassword />
       },
       {
+        path: 'verify-email',
+        element: <EmailVerification />,
+        loader: async () => {
+          await getAuth().authStateReady()
+          if (!getAuth().currentUser) {
+            return redirect('/login')
+          }
+          if (getAuth().currentUser.emailVerified) {
+            return redirect('/dashboard/profile')
+          }
+          return null
+        }
+      },
+      {
         path: 'dashboard/',
         element: <Dashboard />,
         id: 'dashboard',
@@ -52,6 +67,9 @@ export const router = createBrowserRouter([
           await getAuth().authStateReady()
           if (getAuth().currentUser === null) {
             return redirect('/login')
+          }
+          if (!getAuth().currentUser.emailVerified) {
+            return redirect('/verify-email')
           }
           return false
         },

@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth'
 import { Timestamp, Transaction, collection, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, runTransaction, setDoc, updateDoc, where } from 'firebase/firestore'
 import { app } from '../firebase/init'
 import { UserAvailabilityError, UserNotFoundError } from '../errors/userAvailability'
@@ -12,7 +12,8 @@ export const logEmailPassword = async (user) => {
 }
 export const registerEmailPassword = async (user) => {
   await checkUsernameAvailability(user.username)
-  await createUserWithEmailAndPassword(auth, user.email, user.password)
+  const userCredential = await createUserWithEmailAndPassword(auth, user.email, user.password)
+  await sendEmailVerification(userCredential.user)
   await createUser({ username: user.username })
 }
 
