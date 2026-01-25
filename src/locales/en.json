@@ -107,5 +107,10 @@
     "verify-email-subtitle": "We've sent a verification email to your address. Please check your email and click the verification link to continue.",
     "verification-email-sent": "Verification email sent successfully",
     "resend-verification": "Resend Verification Email",
-    "sign-out": "Sign Out"
+    "sign-out": "Sign Out",
+    "dark-mode": "Dark Mode",
+    "light-mode": "Light Mode",
+    "settings": "Settings",
+    "theme": "Theme",
+    "system-theme": "System"
 }

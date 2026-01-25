@@ -7,6 +7,7 @@ import { getAuth } from 'firebase/auth'
 import { Analytics, Palette, DragIndicator, Visibility, Language, Devices } from '@mui/icons-material'
 import { label } from '../locales/locale'
 import { useTheme } from '@emotion/react'
+import ThemeToggle from '../components/ThemeToggle'
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   alignItems: 'flex-start',
   paddingTop: theme.spacing(1),
@@ -36,6 +37,9 @@ export default function Home () {
   }, [getAuth().currentUser])
   return (
     <>
+      <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+        <ThemeToggle />
+      </Box>
       <Container maxWidth="lg" sx={{ py: 8 }}>
         {/* Hero Section */}
         <Box textAlign="center" mb={8}>

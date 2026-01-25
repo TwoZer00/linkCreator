@@ -106,5 +106,10 @@
     "verify-email-subtitle": "Hemos enviado un correo de verificación a tu dirección. Por favor revisa tu correo y haz clic en el enlace de verificación para continuar.",
     "verification-email-sent": "Correo de verificación enviado exitosamente",
     "resend-verification": "Reenviar Correo de Verificación",
-    "sign-out": "Cerrar Sesión"
+    "sign-out": "Cerrar Sesión",
+    "dark-mode": "Modo Oscuro",
+    "light-mode": "Modo Claro",
+    "settings": "Configuración",
+    "theme": "Tema",
+    "system-theme": "Sistema"
 }

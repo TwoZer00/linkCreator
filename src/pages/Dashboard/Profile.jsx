@@ -7,9 +7,11 @@ import { label } from '../../locales/locale'
 import { useLoaderData, useNavigate, useOutletContext } from 'react-router-dom'
 import CustomAvatar from '../../components/CustomAvatar'
 import { useTheme } from '@emotion/react'
+import { useTheme as useThemeContext } from '../../contexts/ThemeContext'
 
 export default function Profile () {
   const theme = useTheme()
+  const { themeMode, setTheme } = useThemeContext()
   const [formData, setFormData] = useState(useLoaderData() || { email: '', username: '', description: '', avatar: '' })
   const [isNewUser, setIsNewUser] = useState()
   const [errors, setErrors] = useState({})
@@ -199,6 +201,19 @@ export default function Profile () {
             <MenuItem value="Montserrat">Montserrat</MenuItem>
           </TextField>
         </Box>
+        <Typography variant='h2' fontSize={18} sx={{ ':first-letter': { textTransform: 'uppercase' } }}>{label('settings')}</Typography>
+        <TextField
+          select
+          label={label('theme')}
+          value={themeMode}
+          onChange={(e) => setTheme(e.target.value)}
+          size="small"
+          InputLabelProps={{ sx: { ':first-letter': { textTransform: 'uppercase' } } }}
+        >
+          <MenuItem value="light">{label('light-mode')}</MenuItem>
+          <MenuItem value="dark">{label('dark-mode')}</MenuItem>
+          <MenuItem value="system">{label('system-theme')}</MenuItem>
+        </TextField>
         <Stack direction='column' gap={2}>
           <Button variant='contained' type='submit'>{label('save')}</Button>
           <Button type='button' variant='contained' component='a' href={`/${formData.username || getAuth().currentUser.uid}`} target='_blank' rel='noopener noreferrer'>{label('view-page')}</Button>
