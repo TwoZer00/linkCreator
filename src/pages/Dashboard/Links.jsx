@@ -285,20 +285,50 @@ const InputLink = ({ updatedLink = [] }) => {
       tempLink.creationTime = new Date()
     }
     const tempErrors = { ...errors }
-    form.querySelectorAll('input').forEach(async (input) => {
-      switch (input.id) {
-        case 'link':
-          if (!input.checkValidity() || !validateURL(input.value)) { tempErrors.link = input.validationMessage || label('invalid-link-pattern') } else { delete tempErrors.link }
-          break
-        default:
-          if (!input.checkValidity()) { tempErrors[input.id] = input.validationMessage } else { delete tempErrors[input.id] }
-          break
+    
+    // Validate link field
+    const linkInput = form.querySelector('#link')
+    let normalizedUrl = ''
+    if (linkInput) {
+      normalizedUrl = linkInput.value.trim()
+      
+      // Only add https:// if no protocol exists
+      if (normalizedUrl && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(normalizedUrl)) {
+        normalizedUrl = `https://${normalizedUrl}`
+      }
+      
+      // Validate the URL
+      if (!normalizedUrl || !validateURL(normalizedUrl)) {
+        tempErrors.link = label('invalid-link-pattern')
+      } else {
+        // Update the link state with normalized URL
+        setLink(prev => ({ ...prev, link: normalizedUrl }))
+        tempLink.link = normalizedUrl
+        delete tempErrors.link
+      }
+    }
+    
+    // Validate other fields
+    const nameInput = form.querySelector('#name')
+    if (nameInput && !nameInput.value.trim()) {
+      // Auto-generate name if empty and URL is valid
+      if (!tempErrors.link && normalizedUrl) {
+        tempLink.name = getURLSiteName(normalizedUrl)
+      } else {
+        tempErrors.name = 'Name is required'
+      }
+    } else if (nameInput) {
+      tempLink.name = nameInput.value.trim()
+    }
+    
+    // Validate other required fields
+    form.querySelectorAll('input:not(#link):not(#name)').forEach((input) => {
+      if (!input.checkValidity()) {
+        tempErrors[input.id] = input.validationMessage
+      } else {
+        delete tempErrors[input.id]
       }
     })
-    if (tempErrors.name && !tempErrors.link) {
-      tempLink.name = getURLSiteName(link.link)
-      delete tempErrors.name
-    }
     setErrors(tempErrors)
     if (!Object.keys(tempErrors).length) {
       let resolveLink = {}
@@ -343,16 +373,32 @@ const InputLink = ({ updatedLink = [] }) => {
   }
 
   const validateURL = (url) => {
-    const regex = new RegExp(/^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i)
-    if (!url) return false
-    if (!regex.test(url)) return false
-    return true
+    if (!url || typeof url !== 'string') return false
+    
+    // Check for valid URL format
+    const urlPattern = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/
+    
+    if (!urlPattern.test(url)) return false
+    
+    try {
+      const urlObj = new URL(url)
+      // Only allow http and https protocols
+      if (!['http:', 'https:'].includes(urlObj.protocol)) return false
+      // Must have a valid hostname
+      if (!urlObj.hostname || urlObj.hostname.length < 3) return false
+      return true
+    } catch {
+      return false
+    }
   }
 
   const getURLSiteName = (url) => {
-    const tempUrl = new URL(url)
-    const hostname = tempUrl.hostname
-    return hostname.substring(0, hostname.lastIndexOf('.com'))
+    try {
+      const urlObj = new URL(url)
+      return urlObj.hostname.replace('www.', '').split('.')[0]
+    } catch {
+      return 'Link'
+    }
   }
   return (
     <Stack component='form' onSubmit={handleSubmit} noValidate gap={2}>
